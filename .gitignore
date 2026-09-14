@@ -1,0 +1,34 @@
+# Portable runtimes
+python_portable/
+duckdb_portable/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Databases & outputs
+*.duckdb
+*.db
+exports/
+logs/
+mlruns/
+reports/
+uploads/
+
+# Secrets
+configs/secrets.sql
+configs/paths.json
+
+# Data
+data/*
+!data/.gitkeep
+
+# OS noise
+.DS_Store
+Thumbs.db
