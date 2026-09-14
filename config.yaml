@@ -1,0 +1,87 @@
+# ==================================================================
+# Portable DuckDB Toolkit - Central Configuration
+# ==================================================================
+# Edit this file before running `python setup.py`.
+# All relative paths are resolved against the project root.
+# ==================================================================
+
+paths:
+  project_root: "."
+  python_dir:     "python_portable"
+  duckdb_dir:     "duckdb_portable"
+  extensions_dir: "duckdb_portable/extensions"
+  models_dir:     "duckdb_portable/models"
+  jobs_dir:      "jobs"
+  configs_dir:   "configs"
+  data_dir:      "data"
+  exports_dir:   "exports"
+  logs_dir:      "logs"
+  mlruns_dir:    "mlruns"
+  reports_dir:   "reports"
+
+python:
+  version: "3.12"
+
+pytorch:
+  build: "cpu"             # cpu | cuda
+  cuda_version: "cu121"    # cu118 | cu121 | cu124
+
+packages:
+  core:            true
+  jupyter:         true
+  visualization:   true
+  streamlit:       true
+  eda:             true
+  data_quality:    true
+  notebook_tools:  true
+  scheduling:      true
+  ml:              true
+  mlops:           true
+  cloud:           true
+  utilities:       true
+
+extensions:
+  core:
+    - parquet
+    - json
+    - icu
+    - httpfs
+    - fts
+    - vss
+    - inet
+    - iceberg
+    - delta
+    - ducklake
+    - lance
+  community:
+    - paimon
+    - qvd
+    - pbix
+    - oracle_scanner
+    - postgres_scanner
+    - mysql_scanner
+    - sqlite_scanner
+    - mssql
+    - mongo
+    - cassandra
+    - odbc_scanner
+    - ai
+    - whisper
+
+runtime:
+  duckdb_memory_limit: "8GB"
+  duckdb_threads: 4
+  jupyter_port: 8888
+  streamlit_port: 8501
+
+scheduler:
+  log_dir: "logs"
+  timezone: "UTC"
+
+setup:
+  download_duckdb:      true
+  download_miniconda:   true
+  install_packages:     true
+  install_extensions:   true
+  create_config_files:  true
+  skip_existing:        true
