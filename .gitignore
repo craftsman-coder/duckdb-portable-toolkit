@@ -12,22 +12,27 @@ venv/
 # Jupyter
 .ipynb_checkpoints/
 
-# Databases & outputs
+# Databases
 *.duckdb
 *.db
-exports/
-logs/
-mlruns/
-reports/
-uploads/
+
+# Runtime output folders (keep the folder, ignore the contents)
+exports/*
+!exports/.gitkeep
+logs/*
+!logs/.gitkeep
+mlruns/*
+!mlruns/.gitkeep
+reports/*
+!reports/.gitkeep
+uploads/*
+!uploads/.gitkeep
+data/*
+!data/.gitkeep
 
 # Secrets
 configs/secrets.sql
 configs/paths.json
-
-# Data
-data/*
-!data/.gitkeep
 
 # OS noise
 .DS_Store
