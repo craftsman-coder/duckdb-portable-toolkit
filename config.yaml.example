@@ -1,5 +1,8 @@
 # ==================================================================
-# Full installation - everything (~10-12 GB)
+# Portable DuckDB Toolkit - Central Configuration
+# ==================================================================
+# Edit this file before running `python setup.py`.
+# All relative paths are resolved against the project root.
 # ==================================================================
 
 paths:
@@ -19,10 +22,10 @@ paths:
   reports_dir:    "reports"
 
 python:
-  version: "3.12.7"
+  version: "3.12.7"        # any 3.12.x from python-build-standalone
 
 pytorch:
-  build: "cpu"
+  build: "cpu"             # cpu | cuda
   cuda_version: "cu121"
 
 packages:
@@ -52,7 +55,6 @@ extensions:
     - delta
     - ducklake
     - lance
-    - ui
   community:
     - paimon
     - qvd
@@ -68,26 +70,9 @@ extensions:
     - ai
     - whisper
 
-ai:
-  enabled: true
-  provider: "ollama"
-  ollama_host: "http://localhost:11434"
-  model: "qwen2.5-coder:3b"
-  auto_pull: true
-
-duck_ui:
-  enabled: true
-  port: 5522
-
-mcp:
-  enabled: true
-  db_path: ":memory:"
-  read_only: true
-  http_port: 8801
-
 runtime:
-  duckdb_memory_limit: "16GB"
-  duckdb_threads: 8
+  duckdb_memory_limit: "8GB"
+  duckdb_threads: 4
   jupyter_port: 8888
   streamlit_port: 8501
 
@@ -102,3 +87,17 @@ setup:
   install_extensions:   true
   create_config_files:  true
   skip_existing:        true
+  
+# ==================================================================
+# MCP Server for AI
+# ==================================================================
+mcp:
+  enabled: true
+  # Path to the DuckDB database that the AI can query.
+  # Use ":memory:" for a temporary database, or a path to a .duckdb file.
+  db_path: ":memory:"
+  # Read-only mode for safety (recommended).
+  read_only: true
+  # Port for HTTP transport (optional, for advanced use).
+  # When running over stdio (default), this is ignored.
+  http_port: 8801

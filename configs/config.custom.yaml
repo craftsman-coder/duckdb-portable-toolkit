@@ -1,5 +1,8 @@
 # ==================================================================
-# Full installation - everything (~10-12 GB)
+# Custom installation - start from full, edit as you wish
+# ==================================================================
+# Run `python setup.py` and choose option 4.
+# Then edit config.yaml and run `python setup.py` again.
 # ==================================================================
 
 paths:
@@ -22,6 +25,7 @@ python:
   version: "3.12.7"
 
 pytorch:
+  # cpu | cuda
   build: "cpu"
   cuda_version: "cu121"
 
@@ -72,6 +76,7 @@ ai:
   enabled: true
   provider: "ollama"
   ollama_host: "http://localhost:11434"
+  # qwen2.5-coder:1.5b | qwen2.5-coder:3b | qwen3:4b | gemma3:4b
   model: "qwen2.5-coder:3b"
   auto_pull: true
 
@@ -86,8 +91,9 @@ mcp:
   http_port: 8801
 
 runtime:
-  duckdb_memory_limit: "16GB"
-  duckdb_threads: 8
+  # Laptop: 4-8 GB. Server with 256 GB: 200 GB.
+  duckdb_memory_limit: "8GB"
+  duckdb_threads: 4
   jupyter_port: 8888
   streamlit_port: 8501
 

@@ -32,7 +32,9 @@ def paths() -> dict:
     p = cfg["paths"]
     return {
         "project_root": base,
+        "runtime_dir": r(p["runtime_dir"]),
         "python_dir": r(p["python_dir"]),
+        "venv_dir": r(p["venv_dir"]),
         "duckdb_dir": r(p["duckdb_dir"]),
         "extensions_dir": r(p["extensions_dir"]),
         "models_dir": r(p["models_dir"]),
@@ -48,6 +50,9 @@ def paths() -> dict:
 
 P = paths()
 ROOT_DIR = P["project_root"]
+RUNTIME_DIR = P["runtime_dir"]
+PYTHON_DIR = P["python_dir"]
+VENV_DIR = P["venv_dir"]
 DUCKDB_DIR = P["duckdb_dir"]
 EXTENSIONS_DIR = P["extensions_dir"]
 MODELS_DIR = P["models_dir"]
@@ -69,3 +74,15 @@ def runtime() -> dict:
 
 def scheduler_cfg() -> dict:
     return load().get("scheduler", {})
+
+
+def ai_cfg() -> dict:
+    return load().get("ai", {})
+
+
+def mcp_cfg() -> dict:
+    return load().get("mcp", {})
+
+
+def duck_ui_cfg() -> dict:
+    return load().get("duck_ui", {})

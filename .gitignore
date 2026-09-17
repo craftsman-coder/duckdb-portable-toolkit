@@ -1,6 +1,5 @@
-# Portable runtimes
-python_portable/
-duckdb_portable/
+# Portable runtime (all binaries and packages)
+runtime/
 
 # Python
 __pycache__/
@@ -16,7 +15,7 @@ venv/
 *.duckdb
 *.db
 
-# Runtime output folders (keep the folder, ignore the contents)
+# Runtime output folders (keep folder, ignore contents)
 exports/*
 !exports/.gitkeep
 logs/*

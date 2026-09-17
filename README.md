@@ -1,100 +1,341 @@
 # Portable DuckDB Toolkit
 
-A fully portable data + ML environment that runs inside Jupyter and Streamlit.
-Works on Windows and Linux. After the initial setup, everything runs offline.
+A fully portable data + ML environment that runs inside Jupyter and
+Streamlit. Works on **Windows** and **Linux**. After the initial setup,
+everything runs **offline**.
 
-## How it works
-
-- All install choices live in config.yaml.
-- setup.py reads config.yaml and installs everything into folders inside
-  the project (fully portable).
-- After setup, nothing needs internet.
-- verify.py checks that everything is correctly installed.
+---
 
 ## Quick start
 
 ### 1. Clone
 
-    git clone https://github.com/YOUR-USERNAME/duckdb-portable-toolkit.git
-    cd duckdb-portable-toolkit
+```bash
+git clone https://github.com/YOUR-USERNAME/duckdb-portable-toolkit.git
+cd duckdb-portable-toolkit
+```
 
-### 2. Edit config.yaml
+### 2. Run setup (needs internet once)
 
-Common changes:
+```bash
+python setup.py
+```
 
-    paths:
-      project_root: "D:/duckdb-toolkit"
+Choose a profile when asked:
 
-    pytorch:
-      build: "cuda"
-      cuda_version: "cu121"
+| Option | Profile | Description | Size |
+|---|---|---|---|
+| 1 | light | DuckDB + Jupyter | ~500 MB |
+| 2 | standard | + viz + ML + AI + MCP | ~3-4 GB |
+| 3 | full | + EDA + MLflow + all extensions | ~10-12 GB |
+| 4 | custom | Like full, but you edit config first | varies |
 
-    runtime:
-      duckdb_memory_limit: "200GB"
-      duckdb_threads: 16
+You can skip the prompt:
 
-### 3. Run setup (needs internet once)
+```bash
+python setup.py --profile standard
+```
 
-    python setup.py
+### 3. Verify
 
-### 4. Verify
+```bash
+python verify.py
+```
 
-    python verify.py
+### 4. Launch JupyterLab
 
-### 5. Launch Jupyter
+```bash
+# Windows
+runtime\venv\Scripts\jupyter-lab.exe
 
-    # Windows
-    python_portable\Scripts\jupyter-lab.exe
+# Linux
+runtime/venv/bin/jupyter-lab
+```
 
-    # Linux
-    python_portable/bin/jupyter-lab
+Open `http://localhost:8888` in your browser.
 
-### 6. Launch a Streamlit dashboard
+### 5. Launch a Streamlit dashboard
 
-    # Windows
-    python_portable\Scripts\streamlit.exe run dashboards\01_orders_dashboard.py
+Streamlit runs in a browser tab at `http://localhost:8501`.
 
-    # Linux
-    python_portable/bin/streamlit run dashboards/01_orders_dashboard.py
+```bash
+# Windows
+runtime\venv\Scripts\streamlit.exe run dashboards\01_orders_dashboard.py
 
-Open http://localhost:8501.
+# Linux
+runtime/venv/bin/streamlit run dashboards/01_orders_dashboard.py
+```
 
-## Examples
+Inside JupyterLab:
 
-- 01_basic_queries.py          - Run SQL against DuckDB
-- 02_parallel_queries.py       - Run many queries at once
-- 03_scheduled_jobs.py         - Schedule a daily job
-- 07_machine_learning.py       - scikit-learn + MLflow
-- 09_lakehouse_formats.py      - Iceberg, Delta, Lance, DuckLake
+```python
+from toolkit.ui import start_streamlit
+start_streamlit("dashboards/01_orders_dashboard.py")
+```
 
-## Dashboards
+---
 
-- 01_orders_dashboard.py       - KPIs, table, charts
-- 03_sql_workbench.py          - Run arbitrary SQL
+## Managing your toolkit
 
-## Scheduling jobs
+Everything you need is in `toolkit.maintenance`. Run these from any
+Jupyter cell.
 
-    from toolkit.jobs import JobScheduler
-    scheduler = JobScheduler()
-    scheduler.add_cron_job("daily_export", "jobs/example_daily_export.py",
-                           hour=0, minute=30)
-    scheduler.start()
+### Install a Python package
 
-## Database connections
+```python
+from toolkit.maintenance import install_python_package
+install_python_package("statsmodels")
+```
 
-Edit configs/secrets.sql with your credentials:
+### Install a DuckDB extension
 
-    import duckdb
-    con = duckdb.connect()
-    con.execute(open("configs/secrets.sql").read())
-    df = con.execute(
-        "SELECT * FROM oracle_query('ora', 'SELECT * FROM sales') LIMIT 10"
-    ).fetchdf()
+```python
+from toolkit.maintenance import install_duckdb_extension
+install_duckdb_extension("httpfs")
+install_duckdb_extension("qvd", community=True)
+```
+
+### Change the AI model
+
+```python
+from toolkit.maintenance import change_ai_model
+change_ai_model("qwen3:8b")
+```
+
+Then pull the model:
+
+```bash
+ollama pull qwen3:8b
+```
+
+See `docs/AI_MODELS.md` to switch to a bigger model or enable GPU.
+
+### See what's installed
+
+```python
+from toolkit.maintenance import (
+    list_python_packages,
+    list_duckdb_extensions,
+)
+list_python_packages()[:10]
+list_duckdb_extensions()
+```
+
+---
+
+## Installing packages offline (air-gapped servers)
+
+Two steps: download on a machine with internet, copy the files,
+install on the offline machine.
+
+### Python package
+
+**On the internet machine:**
+
+```python
+from toolkit.maintenance import download_python_package
+download_python_package("statsmodels")
+# -> saves wheels to offline/wheels/
+```
+
+**Copy** the `offline/wheels/` folder to the offline machine.
+
+**On the offline machine:**
+
+```python
+from toolkit.maintenance import install_python_package_offline
+install_python_package_offline("statsmodels")
+```
+
+### DuckDB extension
+
+**On the internet machine:**
+
+```python
+from toolkit.maintenance import download_duckdb_extension
+download_duckdb_extension("httpfs")
+# -> saves to offline/extensions/httpfs.duckdb_extension
+```
+
+**Copy** the `.duckdb_extension` file to:
+
+```
+runtime/duckdb/extensions/
+```
+
+**On the offline machine:**
+
+```python
+import duckdb
+con = duckdb.connect()
+con.execute("SET extension_directory='runtime/duckdb/extensions'")
+con.execute("LOAD httpfs")
+```
+
+Full guide: `docs/OFFLINE_INSTALL.md`
+
+---
+
+## Teaching the AI about your data
+
+The AI reads three Markdown files through the MCP server:
+
+| File | Purpose | Who edits |
+|---|---|---|
+| `mcp/context/business.md` | Tables, business rules, metrics | You |
+| `mcp/capabilities.md` | What the AI can do, style guide | You |
+| `runtime/manifest.md` | Installed packages and extensions | Auto-generated |
+
+### After installing a new package or extension
+
+Run once:
+
+```python
+from toolkit.maintenance import refresh_ai_docs
+refresh_ai_docs()
+```
+
+This regenerates `runtime/manifest.md`. The AI will know about the
+new tool the next time it queries.
+
+### After changing your business rules
+
+Just edit `mcp/context/business.md`. The MCP server reads it on every
+request, so no restart is needed.
+
+Example addition to `business.md`:
+
+```markdown
+## Rules
+- All monetary columns are in Iranian Rials (IRR).
+- Only `status = 'active'` rows count toward revenue.
+```
+
+To see the tips again from Python:
+
+```python
+from toolkit.maintenance import show_capabilities_tips
+show_capabilities_tips()
+```
+
+---
+
+## Local AI assistant
+
+The default setup uses Ollama with `qwen2.5-coder:3b` on CPU.
+Ollama runs fully offline after the model is downloaded once.
+
+Start it:
+
+```python
+from toolkit.ui import start_ollama
+start_ollama()
+```
+
+Then open the chat panel in JupyterLab.
+
+To switch to a bigger model, see `docs/AI_MODELS.md`. It covers:
+
+- Recommended models (`qwen3:8b`, `qwen3:14b`, ...)
+- Enabling GPU acceleration (NVIDIA CUDA, AMD ROCm, Apple Metal)
+- Using **llama.cpp** instead of Ollama
+- Using **vLLM** for high-throughput serving
+
+Quick change:
+
+```python
+from toolkit.maintenance import change_ai_model
+change_ai_model("qwen3:8b")
+```
+
+Then in the terminal:
+
+```bash
+ollama pull qwen3:8b
+```
+
+---
+
+## RAG (give the AI your documents)
+
+See `docs/RAG.md`.
+
+```python
+from toolkit.rag import create_index, search
+create_index("data/docs", table_name="docs")
+search("my question", table_name="docs")
+```
+
+---
+
+## Directory layout
+
+```
+duckdb-portable-toolkit/
+├── config.yaml
+├── configs/
+│   ├── config.light.yaml
+│   ├── config.standard.yaml
+│   ├── config.full.yaml
+│   ├── config.custom.yaml
+│   └── secrets.sql
+├── setup.py
+├── verify.py
+├── runtime/               <- created by setup.py
+│   ├── python/
+│   ├── venv/
+│   └── duckdb/
+├── toolkit/
+│   ├── config.py
+│   ├── parallel.py
+│   ├── jobs.py
+│   ├── io_helpers.py
+│   ├── ml.py
+│   ├── lakehouse.py
+│   ├── ui.py
+│   ├── maintenance.py     <- user actions
+│   └── rag.py
+├── examples/
+├── dashboards/
+├── jobs/
+├── mcp/
+│   ├── server.py
+│   ├── manifest_generator.py
+│   ├── capabilities.md
+│   └── context/business.md
+├── docs/
+│   ├── INSTALL_LINUX.md
+│   ├── CONNECT_DUCK_UI.md
+│   ├── CONNECT_OLLAMA.md
+│   ├── MANIFEST_GENERATOR.md
+│   ├── AI_MODELS.md
+│   ├── RAG.md
+│   └── OFFLINE_INSTALL.md
+└── offline/               <- for air-gapped transfers
+    ├── wheels/
+    └── extensions/
+```
+
+---
 
 ## Uninstall
 
 Delete the project folder. Nothing was installed on the system.
 
+---
+
+## Documentation
+
+- `docs/INSTALL_LINUX.md` - Linux install
+- `docs/CONNECT_DUCK_UI.md` - Offline DuckDB UI
+- `docs/CONNECT_OLLAMA.md` - Local AI setup
+- `docs/AI_MODELS.md` - Switch models, enable GPU
+- `docs/RAG.md` - Retrieval-augmented generation
+- `docs/OFFLINE_INSTALL.md` - Air-gapped installs
+- `docs/MANIFEST_GENERATOR.md` - Environment manifest
+
+---
+
 ## License
 
-MIT - see the LICENSE file.
+MIT - see the `LICENSE` file.

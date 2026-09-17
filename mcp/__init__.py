@@ -1,0 +1,1 @@
+"""MCP server for DuckDB + business context + environment manifest."""

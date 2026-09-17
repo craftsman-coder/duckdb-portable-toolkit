@@ -1,5 +1,5 @@
 # ==================================================================
-# Full installation - everything (~10-12 GB)
+# Light installation - minimal footprint (~500 MB)
 # ==================================================================
 
 paths:
@@ -28,15 +28,15 @@ pytorch:
 packages:
   core:            true
   jupyter:         true
-  visualization:   true
-  streamlit:       true
-  eda:             true
-  data_quality:    true
-  notebook_tools:  true
-  scheduling:      true
-  ml:              true
-  mlops:           true
-  cloud:           true
+  visualization:   false
+  streamlit:       false
+  eda:             false
+  data_quality:    false
+  notebook_tools:  false
+  scheduling:      false
+  ml:              false
+  mlops:           false
+  cloud:           false
   utilities:       true
 
 extensions:
@@ -44,40 +44,13 @@ extensions:
     - parquet
     - json
     - icu
-    - httpfs
-    - fts
-    - vss
-    - inet
-    - iceberg
-    - delta
-    - ducklake
-    - lance
-    - ui
-  community:
-    - paimon
-    - qvd
-    - pbix
-    - oracle_scanner
-    - postgres_scanner
-    - mysql_scanner
-    - sqlite_scanner
-    - mssql
-    - mongo
-    - cassandra
-    - odbc_scanner
-    - ai
-    - whisper
+  community: []
 
 ai:
-  enabled: true
-  provider: "ollama"
-  ollama_host: "http://localhost:11434"
-  model: "qwen2.5-coder:3b"
-  auto_pull: true
+  enabled: false
 
 duck_ui:
-  enabled: true
-  port: 5522
+  enabled: false
 
 mcp:
   enabled: true
@@ -86,8 +59,8 @@ mcp:
   http_port: 8801
 
 runtime:
-  duckdb_memory_limit: "16GB"
-  duckdb_threads: 8
+  duckdb_memory_limit: "4GB"
+  duckdb_threads: 2
   jupyter_port: 8888
   streamlit_port: 8501
 

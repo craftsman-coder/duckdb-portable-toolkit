@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "duckdb-portable": {
+      "command": "runtime/venv/Scripts/python.exe",
+      "args": ["mcp/server.py"],
+      "env": {
+        "PYTHONPATH": "."
+      }
+    }
+  }
+}
