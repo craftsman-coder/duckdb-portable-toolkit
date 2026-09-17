@@ -173,35 +173,22 @@ def print_banner() -> None:
     print()
     if USE_COLOR:
         banner = r"""
-   ____             _      ____       _
-  |  _ \ _   _  ___| | __ |  _ \ _   | | __
-  | | | | | | |/ __| |/ / | | | | | | | |/ /
-  | |_| | |_| | (__|   <  | |_| | |_| |   <
-  |____/ \__,_|\___|_|\_\ |____/ \__,_|_|\_\
+  ____             _         ____  ____
+ |  _ \ _   _  ___| | __    |  _ \| __ )
+ | | | | | | |/ __| |/ /    | | | |  _ \
+ | |_| | |_| | (__|   <     | |_| | |_) |
+ |____/ \__,_|\___|_|\_\    |____/|____/
 
-     Portable DuckDB Toolkit - Setup
+        p o r t a b l e   t o o l k i t
 """
         print(_c(banner, C.BRIGHT_CYAN))
     else:
         print()
-        print("  Portable DuckDB Toolkit - Setup")
+        print("  DuckDB Portable Toolkit")
         print()
     print(_c("  A fully portable data + ML environment that runs inside", C.DIM))
     print(_c("  Jupyter and Streamlit. Works on Windows and Linux.", C.DIM))
     print()
-
-
-# ==================================================================
-# Profile selection
-# ==================================================================
-PROFILE_INFO = [
-    ("1", "light",    "DuckDB + Jupyter",                       "~500 MB"),
-    ("2", "standard", "+ viz + ML + AI + MCP",                  "~3-4 GB"),
-    ("3", "full",     "+ EDA + MLflow + all extensions",        "~10-12 GB"),
-    ("4", "custom",   "Like full, but you edit config first",   "varies"),
-]
-
-
 def show_profile_table() -> None:
     heading("Available Installation Profiles")
     if USE_COLOR:
