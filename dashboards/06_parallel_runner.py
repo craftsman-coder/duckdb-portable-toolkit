@@ -8,7 +8,6 @@ import streamlit as st
 
 from _common import page_header
 
-
 page_header("Parallel query runner", "Run multiple DuckDB queries at once.")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))

@@ -5,7 +5,6 @@ import streamlit as st
 
 from _common import page_header, aggrid_table, extensions_dir
 
-
 page_header("Lakehouse viewer", "Browse Iceberg, Delta, Lance, DuckLake.")
 
 con = duckdb.connect()

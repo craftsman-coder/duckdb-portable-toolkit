@@ -7,7 +7,6 @@ import streamlit as st
 
 from _common import page_header
 
-
 page_header("MLflow runs", "Browse runs stored in ./mlruns.")
 
 tracking = Path("mlruns").resolve()

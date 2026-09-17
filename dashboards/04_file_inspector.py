@@ -7,7 +7,6 @@ import streamlit as st
 
 from _common import page_header, aggrid_table, extensions_dir
 
-
 page_header("File inspector", "Preview CSV, Parquet, JSON, QVD.")
 
 con = duckdb.connect()

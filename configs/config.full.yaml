@@ -6,7 +6,6 @@ paths:
   project_root: "."
   runtime_dir:    "runtime"
   python_dir:     "runtime/python"
-  venv_dir:       "runtime/venv"
   duckdb_dir:     "runtime/duckdb"
   extensions_dir: "runtime/duckdb/extensions"
   models_dir:     "runtime/duckdb/models"
@@ -53,27 +52,39 @@ extensions:
     - ducklake
     - lance
     - ui
-  community:
-    - paimon
-    - qvd
-    - pbix
-    - oracle_scanner
     - postgres_scanner
     - mysql_scanner
     - sqlite_scanner
+    - odbc_scanner
+  community:
+    - qvd
+    - pbix
+    - oracle_scanner
     - mssql
     - mongo
-    - cassandra
-    - odbc_scanner
     - ai
-    - whisper
 
 ai:
   enabled: true
-  provider: "ollama"
-  ollama_host: "http://localhost:11434"
-  model: "qwen2.5-coder:3b"
-  auto_pull: true
+  provider: "llama.cpp"
+  bin_dir: "runtime/llama.cpp"
+  download_urls:
+    windows: "https://huggingface.co/datasets/Fedir-Ilina/llama.ccp/resolve/main/llama-b7589-bin-win-cpu-x64.zip"
+    linux:   "https://github.com/ggerganov/llama.cpp/releases/download/b7589/llama-b7589-bin-linux-x64.zip"
+    macos:   "https://github.com/ggerganov/llama.cpp/releases/download/b7589/llama-b7589-bin-macos-x64.zip"
+    macos_arm: "https://github.com/ggerganov/llama.cpp/releases/download/b7589/llama-b7589-bin-macos-arm64.zip"
+  host: "http://localhost:8080"
+  port: 8080
+  model:
+    dir: "runtime/models"
+    filename: "qwen2.5-1.5b-instruct-q4_k_m.gguf"
+    download_url: "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+    size_gb: 1.0
+  server:
+    threads: 4
+    ctx_size: 2048
+    batch_size: 512
+    n_gpu_layers: 0
 
 duck_ui:
   enabled: true
@@ -102,3 +113,10 @@ setup:
   install_extensions:   true
   create_config_files:  true
   skip_existing:        true
+
+# ==================================================================
+# Whisper (speech-to-text)
+# ==================================================================
+whisper:
+  enabled: true
+  model: "small"

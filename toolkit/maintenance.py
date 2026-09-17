@@ -29,7 +29,6 @@ from toolkit.config import (
     VENV_DIR,
 )
 
-
 # ------------------------------------------------------------------
 # Internal paths
 # ------------------------------------------------------------------
@@ -37,19 +36,15 @@ def _venv_pip() -> Path:
     return (VENV_DIR / "Scripts" / "pip.exe" if sys.platform == "win32"
             else VENV_DIR / "bin" / "pip")
 
-
 def _venv_python() -> Path:
     return (VENV_DIR / "Scripts" / "python.exe" if sys.platform == "win32"
             else VENV_DIR / "bin" / "python")
 
-
 def _manifest_script() -> Path:
     return ROOT_DIR / "mcp" / "manifest_generator.py"
 
-
 def _config_file() -> Path:
     return ROOT_DIR / "config.yaml"
-
 
 # ==================================================================
 # Python packages
@@ -82,7 +77,6 @@ def install_python_package(package: str) -> bool:
         print("       " + r.stderr.strip().splitlines()[-1])
     return False
 
-
 def list_python_packages() -> list[dict]:
     """Return a list of installed Python packages as {name, version}."""
     import json
@@ -97,7 +91,6 @@ def list_python_packages() -> list[dict]:
         return json.loads(r.stdout)
     except Exception:
         return []
-
 
 # ==================================================================
 # Offline: download / install Python packages
@@ -137,7 +130,6 @@ def download_python_package(package: str,
     if r.stderr:
         print("       " + r.stderr.strip().splitlines()[-1])
     return False
-
 
 def install_python_package_offline(
     package: str,
@@ -179,7 +171,6 @@ def install_python_package_offline(
         print("       " + r.stderr.strip().splitlines()[-1])
     return False
 
-
 # ==================================================================
 # DuckDB extensions
 # ==================================================================
@@ -210,7 +201,6 @@ def install_duckdb_extension(name: str, community: bool = False) -> bool:
         print("       " + r.stderr.strip().splitlines()[-1])
     return False
 
-
 def list_duckdb_extensions() -> list[dict]:
     """List installed DuckDB extensions."""
     import json
@@ -228,7 +218,6 @@ def list_duckdb_extensions() -> list[dict]:
         return json.loads(r.stdout)
     except Exception:
         return []
-
 
 # ==================================================================
 # Offline: download DuckDB extensions
@@ -288,7 +277,6 @@ def download_duckdb_extension(
     print(f"     LOAD {name};")
     return True
 
-
 # ==================================================================
 # AI model switching
 # ==================================================================
@@ -338,12 +326,9 @@ def change_ai_model(model_name: str) -> bool:
     print(f"  [ok] AI model changed from '{old}' to '{model_name}'")
     print()
     print("  To pull and start using the model, run:")
-    print(f"     ollama pull {model_name}")
-    print(f"     ollama run {model_name}")
     print()
     print("  For GPU acceleration, see docs/AI_MODELS.md")
     return True
-
 
 # ==================================================================
 # Refresh AI-visible docs
@@ -363,7 +348,6 @@ def refresh_ai_docs() -> None:
     r = subprocess.run([str(py), str(script)], capture_output=True, text=True)
     if r.returncode == 0:
         print("  [ok] runtime/manifest.md refreshed")
-
 
 def show_capabilities_tips() -> None:
     """Print a short note about editing the AI-visible Markdown files."""

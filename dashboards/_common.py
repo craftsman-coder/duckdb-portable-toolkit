@@ -9,18 +9,14 @@ import streamlit as st
 
 from toolkit.config import EXTENSIONS_DIR, CONFIGS_DIR, ROOT_DIR, runtime
 
-
 def project_root() -> Path:
     return ROOT_DIR
-
 
 def extensions_dir() -> Path:
     return EXTENSIONS_DIR
 
-
 def secrets_file() -> Path:
     return CONFIGS_DIR / "secrets.sql"
-
 
 @st.cache_resource
 def get_connection(db_path: str = ":memory:") -> duckdb.DuckDBPyConnection:
@@ -34,12 +30,10 @@ def get_connection(db_path: str = ":memory:") -> duckdb.DuckDBPyConnection:
             pass
     return con
 
-
 def load_secrets(con):
     sf = secrets_file()
     if sf.exists():
         con.execute(sf.read_text(encoding="utf-8"))
-
 
 def page_header(title: str, subtitle: str = "") -> None:
     st.set_page_config(page_title=title, layout="wide")
@@ -48,12 +42,10 @@ def page_header(title: str, subtitle: str = "") -> None:
         st.caption(subtitle)
     st.divider()
 
-
 def kpi_row(items):
     cols = st.columns(len(items))
     for col, (label, value) in zip(cols, items):
         col.metric(label, value)
-
 
 def run_sql(con, sql: str):
     try:
@@ -62,14 +54,12 @@ def run_sql(con, sql: str):
         st.error(f"SQL error: {exc}")
         return None
 
-
 def show_table(df, page_size: int = 25) -> None:
     if df is None or df.empty:
         st.info("No rows to display.")
         return
     st.dataframe(df, use_container_width=True,
                  height=min(600, 40 + 35 * min(len(df), page_size)))
-
 
 def aggrid_table(df, page_size: int = 25) -> None:
     try:

@@ -11,7 +11,6 @@ import duckdb
 
 from toolkit.config import EXTENSIONS_DIR, CONFIGS_DIR
 
-
 def run() -> None:
     output = Path("exports/daily_sales.parquet")
     output.parent.mkdir(parents=True, exist_ok=True)

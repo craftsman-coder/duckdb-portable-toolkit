@@ -6,7 +6,6 @@ paths:
   project_root: "."
   runtime_dir:    "runtime"
   python_dir:     "runtime/python"
-  venv_dir:       "runtime/venv"
   duckdb_dir:     "runtime/duckdb"
   extensions_dir: "runtime/duckdb/extensions"
   models_dir:     "runtime/duckdb/models"
@@ -44,6 +43,10 @@ extensions:
     - parquet
     - json
     - icu
+    - postgres_scanner
+    - mysql_scanner
+    - sqlite_scanner
+    - odbc_scanner
   community: []
 
 ai:
@@ -75,3 +78,10 @@ setup:
   install_extensions:   true
   create_config_files:  true
   skip_existing:        true
+
+# ==================================================================
+# Whisper (speech-to-text)
+# ==================================================================
+whisper:
+  enabled: true
+  model: "small"

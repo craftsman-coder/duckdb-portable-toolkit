@@ -11,8 +11,6 @@
 - toolkit.lakehouse.{iceberg_attach, ducklake_attach, delta_scan, lance_scan, lance_write, paimon_scan}
 - toolkit.ml.{init_mlflow, track_run, log_regression_metrics, split, torch_device}
 - toolkit.io_helpers.{to_parquet, to_csv, to_qvd, read_any}
-- toolkit.ui.{start_duck_ui, start_streamlit, start_ollama}
-
 ## Project conventions
 - Prefer DuckDB SQL for analytics
 - Write outputs to: exports/, reports/, data/, logs/, mlruns/

@@ -5,7 +5,6 @@ import streamlit as st
 from _common import (page_header, run_sql, aggrid_table,
                      get_connection, extensions_dir)
 
-
 page_header("SQL workbench", "Write and run SQL against DuckDB.")
 con = get_connection(":memory:")
 con.execute(f"SET extension_directory='{extensions_dir()}'")

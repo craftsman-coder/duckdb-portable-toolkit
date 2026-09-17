@@ -13,7 +13,6 @@ from apscheduler.triggers.interval import IntervalTrigger
 
 from toolkit.config import LOGS_DIR, scheduler_cfg
 
-
 class JobScheduler:
     def __init__(self, log_dir=None):
         self.log_dir = Path(log_dir) if log_dir else LOGS_DIR

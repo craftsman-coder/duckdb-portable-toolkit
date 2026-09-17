@@ -7,7 +7,6 @@ import streamlit as st
 
 from _common import page_header, aggrid_table
 
-
 page_header("Data explorer", "Open a DuckDB file and browse its tables.")
 
 db_path = st.text_input("DuckDB file path",

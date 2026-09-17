@@ -6,7 +6,6 @@ import streamlit as st
 
 from _common import page_header, kpi_row, aggrid_table
 
-
 @st.cache_data
 def load_orders() -> pd.DataFrame:
     con = duckdb.connect()
@@ -19,7 +18,6 @@ def load_orders() -> pd.DataFrame:
             (ARRAY['north','south','east','west'])[1 + (i % 4)] AS region
         FROM range(1, 5001) t(i)
     """).fetchdf()
-
 
 page_header("Orders dashboard", "Sample data - replace with your own table.")
 df = load_orders()

@@ -75,6 +75,103 @@ start_streamlit("dashboards/01_orders_dashboard.py")
 
 ---
 
+## Launch JupyterLab
+
+Three ways to start JupyterLab. Pick whichever is easiest for you.
+
+### Option 1: Double-click (Windows)
+
+Double-click `start-jupyter.bat` in the project folder.
+
+That's it. The browser opens automatically at `http://localhost:8888/lab`.
+
+### Option 2: Double-click (Linux / macOS)
+
+Double-click `start-jupyter.sh`, or run it from a terminal:
+
+```bash
+./start-jupyter.sh
+```
+
+If it is the first time, make it executable:
+
+```bash
+chmod +x start-jupyter.sh
+```
+
+### Option 3: From a terminal (any OS)
+
+Windows (PowerShell or CMD):
+
+```powershell
+cd C:\projects\duckdb-portable-toolkit
+runtime\venv\Scripts\jupyter-lab.exe
+```
+
+Linux / macOS / Git Bash:
+
+```bash
+cd /path/to/duckdb-portable-toolkit
+runtime/venv/bin/jupyter-lab
+```
+
+### After it starts
+
+The terminal prints a URL like this:
+
+    http://localhost:8888/lab?token=594bf1da49163f5649798767c6a9c2c6b73179c7e2059875
+
+Open that URL in your browser (copy the whole thing, including the token).
+
+### Stopping Jupyter
+
+In the terminal where Jupyter is running, press Ctrl+C twice.
+
+### Changing the port
+
+If port 8888 is already used by another program:
+
+```bash
+# Windows
+runtime\venv\Scripts\jupyter-lab.exe --port 8889
+
+# Linux / macOS
+runtime/venv/bin/jupyter-lab --port 8889
+```
+
+Then open `http://localhost:8889/lab`.
+
+### Accessing from another machine (LAN)
+
+To let colleagues open your Jupyter from their computers:
+
+```bash
+# Windows
+runtime\venv\Scripts\jupyter-lab.exe --ip 0.0.0.0 --port 8888
+
+# Linux / macOS
+runtime/venv/bin/jupyter-lab --ip 0.0.0.0 --port 8888
+```
+
+Then they open `http://YOUR-IP:8888/lab`.
+
+### Troubleshooting
+
+**"Bad config: No such directory"**
+- Use `start-jupyter.bat` (Windows) or `start-jupyter.sh` (Linux).
+- They set the working directory automatically.
+
+**"No module named 'toolkit'"**
+- Make sure you launched Jupyter from the project root.
+- The launcher scripts already do this.
+
+**Browser does not open automatically**
+- Copy the URL from the terminal and paste it into your browser manually.
+- The token is required, so include everything after `?token=`.
+
+**"Address already in use"**
+- Use a different port: `--port 8889` (see above).
+
 ## Managing your toolkit
 
 Everything you need is in `toolkit.maintenance`. Run these from any
@@ -105,7 +202,6 @@ change_ai_model("qwen3:8b")
 Then pull the model:
 
 ```bash
-ollama pull qwen3:8b
 ```
 
 See `docs/AI_MODELS.md` to switch to a bigger model or enable GPU.
@@ -222,14 +318,9 @@ show_capabilities_tips()
 
 ## Local AI assistant
 
-The default setup uses Ollama with `qwen2.5-coder:3b` on CPU.
-Ollama runs fully offline after the model is downloaded once.
-
 Start it:
 
 ```python
-from toolkit.ui import start_ollama
-start_ollama()
 ```
 
 Then open the chat panel in JupyterLab.
@@ -238,7 +329,6 @@ To switch to a bigger model, see `docs/AI_MODELS.md`. It covers:
 
 - Recommended models (`qwen3:8b`, `qwen3:14b`, ...)
 - Enabling GPU acceleration (NVIDIA CUDA, AMD ROCm, Apple Metal)
-- Using **llama.cpp** instead of Ollama
 - Using **vLLM** for high-throughput serving
 
 Quick change:
@@ -251,7 +341,6 @@ change_ai_model("qwen3:8b")
 Then in the terminal:
 
 ```bash
-ollama pull qwen3:8b
 ```
 
 ---
@@ -306,7 +395,6 @@ duckdb-portable-toolkit/
 ├── docs/
 │   ├── INSTALL_LINUX.md
 │   ├── CONNECT_DUCK_UI.md
-│   ├── CONNECT_OLLAMA.md
 │   ├── MANIFEST_GENERATOR.md
 │   ├── AI_MODELS.md
 │   ├── RAG.md
@@ -328,7 +416,6 @@ Delete the project folder. Nothing was installed on the system.
 
 - `docs/INSTALL_LINUX.md` - Linux install
 - `docs/CONNECT_DUCK_UI.md` - Offline DuckDB UI
-- `docs/CONNECT_OLLAMA.md` - Local AI setup
 - `docs/AI_MODELS.md` - Switch models, enable GPU
 - `docs/RAG.md` - Retrieval-augmented generation
 - `docs/OFFLINE_INSTALL.md` - Air-gapped installs

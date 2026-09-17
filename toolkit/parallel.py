@@ -11,7 +11,6 @@ import duckdb
 
 from toolkit.config import runtime
 
-
 @dataclass
 class QueryResult:
     query_id: str
@@ -22,7 +21,6 @@ class QueryResult:
     file: str | None = None
     error: str | None = None
     attempts: int = 0
-
 
 class ParallelRunner:
     def __init__(self, db_path=":memory:", max_workers=None,
