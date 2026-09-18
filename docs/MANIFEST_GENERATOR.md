@@ -6,10 +6,10 @@ this through the MCP server to know what tools are available.
 
 ## When to Run
 
-- **After `setup.py`** — automatic (no action needed)
-- **After installing new packages** — manually
-- **After installing new DuckDB extensions** — manually
-- **Before starting work with AI** — for safety
+- **After `setup.py`** ; automatic (no action needed)
+- **After installing new packages** ; manually
+- **After installing new DuckDB extensions** ; manually
+- **Before starting work with AI** ; for safety
 
 ## How to Run
 
@@ -148,16 +148,16 @@ from toolkit.maintenance import refresh_ai_docs
 refresh_ai_docs()
 ```
 
-This is the simplest option — call it after any install.
+This is the simplest option ; call it after any install.
 
 ## What It Reads
 
 The manifest generator inspects:
 
-1. **Python packages** — via `pip list --format=json`
-2. **DuckDB version** — by importing `duckdb` in the portable Python
-3. **DuckDB extensions** — by querying `duckdb_extensions()`
-4. **Toolkit modules** — by listing `toolkit/*.py`
+1. **Python packages** ; via `pip list --format=json`
+2. **DuckDB version** ; by importing `duckdb` in the portable Python
+3. **DuckDB extensions** ; by querying `duckdb_extensions()`
+4. **Toolkit modules** ; by listing `toolkit/*.py`
 
 ## Troubleshooting
 
@@ -196,7 +196,7 @@ not updating, the file might be cached by the AI. Try:
 
 ## Manual Editing
 
-The manifest is auto-generated — **don't edit it by hand**. Any
+The manifest is auto-generated ; **don't edit it by hand**. Any
 changes will be overwritten the next time the generator runs.
 
 If you want to add custom notes for the AI, edit

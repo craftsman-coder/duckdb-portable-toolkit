@@ -94,5 +94,5 @@ def duck_ui_cfg() -> dict:
 
 
 def venv_dir() -> Path:
-    """Deprecated — kept for backward compatibility. Returns python_dir."""
+    """Deprecated ; kept for backward compatibility. Returns python_dir."""
     return PYTHON_DIR
