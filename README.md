@@ -424,6 +424,7 @@ Delete the project folder. Nothing was installed on the system.
 - `docs/RAG.md` - Retrieval-augmented generation
 - `docs/OFFLINE_INSTALL.md` - Air-gapped installs
 - `docs/MANIFEST_GENERATOR.md` - Environment manifest
+- `docs/CONNECT_BI_TOOLS.md` - Connect Tableau, Power BI, Qlik Sense
 
 ---
 

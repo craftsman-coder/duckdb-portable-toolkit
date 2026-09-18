@@ -117,6 +117,14 @@ setup:
   skip_existing:        true
 
 # ==================================================================
+# ==================================================================
+# BI drivers (ODBC + JDBC for Tableau, Power BI, Qlik Sense)
+# ==================================================================
+bi_drivers:
+  enabled: true
+  install_odbc: true
+  install_jdbc: true
+
 # Whisper (speech-to-text)
 # ==================================================================
 whisper:

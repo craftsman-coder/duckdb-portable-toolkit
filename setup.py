@@ -654,7 +654,14 @@ def install_extensions(paths: Paths, cfg: dict) -> None:
         if r.returncode == 0:
             ok(name + "  (" + repo + ")")
         else:
-            warn(name + "  (" + repo + ") - skipped")
+            if name in ("whisper", "cassandra") and OS == "windows":
+                info(f"{name} ({repo}) - not available for Windows (this is fine)")
+                if name == "whisper":
+                    info("  Use the openai-whisper Python package instead")
+                elif name == "cassandra":
+                    info("  Use ODBC or a Python Cassandra driver")
+            else:
+                warn(name + "  (" + repo + ") - skipped")
     ok("extensions processed")
 
 
@@ -719,6 +726,109 @@ def install_llama_cpp(paths: Paths, cfg: dict) -> None:
 # ==================================================================
 # 7. AI model (GGUF)
 # ==================================================================
+# ==================================================================
+# BI drivers (ODBC + JDBC for DuckDB)
+# ==================================================================
+def install_bi_drivers(paths: Paths, cfg: dict) -> None:
+    """Download ODBC and JDBC drivers for DuckDB into runtime/duckdb/drivers/."""
+    step("Installing BI drivers (ODBC + JDBC)")
+
+    bi_cfg = cfg.get("bi_drivers", {})
+    if not bi_cfg.get("enabled", True):
+        warn("BI drivers disabled in config")
+        return
+
+    drivers_dir = paths.duckdb_dir / "drivers"
+    drivers_dir.mkdir(parents=True, exist_ok=True)
+
+    # ---------- JDBC ----------
+    jdbc_target = drivers_dir / "duckdb_jdbc.jar"
+    if jdbc_target.exists() and cfg["setup"].get("skip_existing", True):
+        size_mb = jdbc_target.stat().st_size / 1024 / 1024
+        ok(f"JDBC already present: {jdbc_target.name} ({size_mb:.1f} MB)")
+    else:
+        jdbc_url = (
+            "https://repo1.maven.org/maven2/org/duckdb/"
+            "duckdb_jdbc/1.3.1.0/duckdb_jdbc-1.3.1.0.jar"
+        )
+        try:
+            download(jdbc_url, jdbc_target)
+            size_mb = jdbc_target.stat().st_size / 1024 / 1024
+            ok(f"JDBC driver: {jdbc_target.name} ({size_mb:.1f} MB)")
+        except Exception as exc:
+            warn(f"JDBC download failed: {exc}")
+
+    # ---------- ODBC (Windows only) ----------
+    if OS == "windows":
+        odbc_zip = drivers_dir / "duckdb_odbc.zip"
+        if odbc_zip.exists() and cfg["setup"].get("skip_existing", True):
+            ok(f"ODBC archive already present: {odbc_zip.name}")
+        else:
+            odbc_url = (
+                "https://github.com/duckdb/duckdb-odbc/releases/"
+                "latest/download/duckdb_odbc-windows-amd64.zip"
+            )
+            try:
+                download(odbc_url, odbc_zip)
+                # Extract the archive
+                extract_zip(odbc_zip, drivers_dir)
+                ok(f"ODBC driver extracted to runtime/duckdb/drivers/")
+            except Exception as exc:
+                warn(f"ODBC download failed: {exc}")
+                info("You can install it manually later.")
+    else:
+        info("ODBC on Linux/macOS: install via package manager or build from source")
+
+    # ---------- README ----------
+    readme = drivers_dir / "README.md"
+    readme.write_text(DRIVERS_README, encoding="utf-8")
+    ok("Created drivers/README.md")
+
+
+DRIVERS_README = """# DuckDB BI Drivers
+
+This folder contains ODBC and JDBC drivers for DuckDB, so BI tools
+like Tableau, Power BI, and Qlik Sense can connect directly.
+
+## Files
+
+- `duckdb_jdbc.jar` - JDBC driver (for Tableau, Qlik, etc.)
+- `duckdb_odbc.dll` (Windows) - ODBC driver
+- `odbc_install.exe` (Windows) - ODBC installer
+
+## Tableau (JDBC)
+
+1. Copy `duckdb_jdbc.jar` to:
+   - Windows: `C:\\Program Files\\Tableau\\<version>\\Drivers\\`
+   - macOS: `~/Library/Tableau/Drivers/`
+2. Restart Tableau
+3. Connect using "Other Databases (JDBC)"
+4. URL format: `jdbc:duckdb:/path/to/database.duckdb`
+
+## Power BI (ODBC)
+
+1. Run `odbc_install.exe` as Administrator
+2. Open "ODBC Data Sources (64-bit)"
+3. Add a new System DSN of type "DuckDB Driver"
+4. Point it to your `.duckdb` file
+5. In Power BI: Get Data -> ODBC -> select the DSN
+
+## Qlik Sense (ODBC)
+
+1. Run `odbc_install.exe` as Administrator
+2. In Qlik Sense: Create new connection -> ODBC
+3. Select the DuckDB DSN
+4. Use the connection in the Data Load Editor
+
+## Notes
+
+- All BI tools connect read-only to DuckDB
+- The database file must not be locked by another process
+- For live dashboards, export data to Parquet and connect the BI
+  tool to Parquet instead (faster)
+"""
+
+
 def install_ai_model(paths: Paths, cfg: dict) -> None:
     step("Setting up AI model")
 
@@ -1160,6 +1270,7 @@ def main() -> None:
     install_packages(paths, cfg)
     install_duckdb(paths, cfg)
     install_extensions(paths, cfg)
+    install_bi_drivers(paths, cfg)
     install_llama_cpp(paths, cfg)
     install_ai_model(paths, cfg)
     install_tiktoken_cache(paths, cfg)
