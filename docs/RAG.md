@@ -182,7 +182,7 @@ If you switch models, you must re-index.
 
 ## 7. Multilingual documents
 
-For Persian, Arabic, or other non-English documents:
+For multilingual, Arabic, or other non-English documents:
 
 ```python
 create_index(
@@ -191,7 +191,7 @@ create_index(
 )
 ```
 
-For mixed Persian + English, use `paraphrase-multilingual-MiniLM-L12-v2`
+For mixed multilingual + English, use `paraphrase-multilingual-MiniLM-L12-v2`
 or `BAAI/bge-m3`.
 
 ## 8. Example end-to-end

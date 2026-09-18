@@ -1,5 +1,5 @@
 # %% [markdown]
-# # 21 - Whisper Speech-to-Text (Persian)
+# # 21 - Whisper Speech-to-Text (multilingual)
 #
 # Convert audio files to text locally, fully offline.
 # Uses the `openai-whisper` package with the `small` model.
@@ -48,7 +48,7 @@ else:
 # ## 2. Transcribe to plain text
 
 # %%
-text = transcribe_to_text(AUDIO_FILE, model="small", language="fa")
+text = transcribe_to_text(AUDIO_FILE, model="small", language=None)
 print("--- Transcribed text ---")
 print(text)
 
@@ -56,7 +56,7 @@ print(text)
 # ## 3. Transcribe with timestamps
 
 # %%
-segments = transcribe_segments(AUDIO_FILE, model="small", language="fa")
+segments = transcribe_segments(AUDIO_FILE, model="small", language=None)
 print(f"{len(segments)} segments\n")
 for seg in segments:
     print(f"[{seg['start']:.2f}s - {seg['end']:.2f}s] {seg['text']}")
@@ -66,7 +66,7 @@ for seg in segments:
 
 # %%
 srt_path = Path("exports/transcript.srt")
-transcribe_to_srt(AUDIO_FILE, srt_path, model="small", language="fa")
+transcribe_to_srt(AUDIO_FILE, srt_path, model="small", language=None)
 print(f"Saved: {srt_path}")
 
 # %%
@@ -79,7 +79,7 @@ if srt_path.exists():
 # %% [markdown]
 # ## 5. Try different models
 #
-# | Model  | Size   | Speed on CPU | Quality (Persian) |
+# | Model  | Size   | Speed on CPU | Quality (multilingual) |
 # |--------|--------|--------------|-------------------|
 # | tiny   | 75 MB  | fastest      | low               |
 # | base   | 142 MB | fast         | ok                |
@@ -90,5 +90,5 @@ if srt_path.exists():
 
 # %%
 # Uncomment to try a faster model:
-# text = transcribe_to_text(AUDIO_FILE, model="base", language="fa")
+# text = transcribe_to_text(AUDIO_FILE, model="base", language=None)
 # print(text)

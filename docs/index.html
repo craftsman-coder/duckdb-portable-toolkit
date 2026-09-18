@@ -929,6 +929,15 @@ footer {
     </div>
 
     <div class="nav-group">
+      <div class="nav-group-title">Getting Started</div>
+      <ul>
+        <li><a href="#who">Who is this for?</a></li>
+        <li><a href="#launchers">Launchers</a></li>
+        <li><a href="#use-cases">What you can do</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
       <div class="nav-group-title">Advanced</div>
       <ul>
         <li><a href="#advanced-rag">RAG</a></li>
@@ -957,11 +966,12 @@ footer {
   <div class="badge">v2.0 · Portable & Offline</div>
   <h1>DuckDB Toolkit</h1>
   <p class="lead">
-    A complete, self-contained data and AI environment that runs inside Jupyter and Streamlit.
-    No system Python, no virtual environment, no admin rights required. Just clone and run.
-    Works on Windows, Linux, and macOS; move the folder anywhere and everything still works.
+    A portable, offline-ready data and AI environment for people who work with data every day. It bundles DuckDB, JupyterLab, Streamlit, a local language model, and BI drivers into one folder; no installation, no admin rights, no virtual environment.
+    <br><br>
+    Pull data from databases and files, <strong>join and process them at high speed</strong>, <strong>transcribe audio to text</strong> with Whisper, teach a local AI about your business, design pipelines, and see the results as tables and charts.
   </p>
   <div class="hero-actions">
+    <a href="#launchers" class="btn btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="5 3 19 12 5 21 5 3"/></svg> Quick launchers</a>
     <a href="#installation" class="btn btn-primary">
       Get Started
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -978,6 +988,125 @@ footer {
 </div>
 
 <!-- ============ INSTALLATION ============ -->
+<section class="doc-section" id="who">
+  <h2>Who is this for? <a href="#who" class="anchor">#</a></h2>
+  <p>DuckDB Toolkit is designed for people who work with data every day.</p>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">🏗</div>
+      <h4>Data engineers</h4>
+      <p>DuckDB for lakehouse workloads, Iceberg / Delta / Lance, job scheduler, parallel runner, connectors to Spark / Kafka / Flink / Trino.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📊</div>
+      <h4>BI developers</h4>
+      <p>50+ Python packages, Streamlit dashboards, ODBC / JDBC drivers to plug into Tableau, Power BI, and Qlik.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🎨</div>
+      <h4>Dashboard developers</h4>
+      <p>Streamlit + DuckDB for fast dashboards on top of Parquet or live databases. Ship in minutes, not days.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🌍</div>
+      <h4>Context engineers</h4>
+      <p>Shape the business context, data dictionaries, and prompts that a local AI needs. Handle geospatial data (GeoPandas + DuckDB spatial), time series, Excel / CSV, QVD for Qlik, and any domain-specific format.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔬</div>
+      <h4>Data scientists</h4>
+      <p>pandas, polars, PyArrow, scikit-learn, XGBoost, LightGBM, PyTorch, MLflow, Optuna, and ydata-profiling for EDA.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🧑‍💻</div>
+      <h4>Analysts</h4>
+      <p>JupyterLab for notebooks, DuckDB UI for direct SQL, and a local AI that answers questions in plain language.</p>
+    </div>
+  </div>
+</section>
+
+<section class="doc-section" id="launchers">
+  <h2>All-in-one launchers <a href="#launchers" class="anchor">#</a></h2>
+  <p>Every task after cloning can be done with a <strong>double-click</strong> (Windows) or a <strong>single command</strong> (Linux / macOS / Git Bash).</p>
+  <table>
+    <thead>
+      <tr><th>Task</th><th>Windows</th><th>Linux / macOS / Git Bash</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Install the toolkit</td><td><code>setup.bat</code></td><td><code>./setup.sh</code></td></tr>
+      <tr><td>Verify the installation</td><td><code>verify.bat</code></td><td><code>./verify.sh</code></td></tr>
+      <tr><td>Launch <strong>JupyterLab</strong></td><td><code>start-jupyter.bat</code></td><td><code>./start-jupyter.sh</code></td></tr>
+      <tr><td>Launch <strong>Streamlit</strong> dashboards</td><td><code>start-streamlit.bat</code></td><td><code>./start-streamlit.sh</code></td></tr>
+      <tr><td>Launch <strong>DuckDB UI</strong> (web SQL)</td><td><code>start-duck-ui.bat</code></td><td><code>./start-duck-ui.sh</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>First-time setup (in order)</h3>
+  <ol class="steps">
+    <li><strong>Install</strong>; double-click <code>setup.bat</code> (or run <code>./setup.sh</code>). Choose a profile:
+      <code>1</code> light, <code>2</code> standard (recommended),
+      <code>3</code> full, <code>4</code> custom.</li>
+    <li><strong>Verify</strong>; double-click <code>verify.bat</code> (or run <code>./verify.sh</code>). All checks should show <code>[ok]</code>.</li>
+    <li><strong>Start working</strong>; double-click <code>start-jupyter.bat</code> (or run <code>./start-jupyter.sh</code>).
+      Your browser opens at <code>http://localhost:8888</code>.</li>
+  </ol>
+
+  <div class="callout info">
+    <div class="ico">i</div>
+    <div class="body">
+      <strong>On Linux / macOS</strong>
+      Make the scripts executable once:
+      <code>chmod +x setup.sh verify.sh start-*.sh</code>
+    </div>
+  </div>
+
+  <h3>DuckDB UI</h3>
+  <p><code>start-duck-ui.bat</code> / <code>start-duck-ui.sh</code> launches the DuckDB web UI at <code>http://localhost:4213</code> for direct SQL exploration.</p>
+  <ul>
+    <li>SQL editor with syntax highlighting</li>
+    <li>Data explorer with tables and simple charts</li>
+    <li>Import Parquet and CSV files on the fly</li>
+    <li>Uses the <code>ui</code> extension installed by <code>setup</code></li>
+    <li><strong>First launch downloads ~10 MB of frontend assets</strong>; after that it works fully offline</li>
+  </ul>
+</section>
+
+<section class="doc-section" id="use-cases">
+  <h2>What you can do <a href="#use-cases" class="anchor">#</a></h2>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">1️⃣</div>
+      <h4>Pull data from anywhere</h4>
+      <p>Read Parquet, CSV, JSON, Excel, QVD, and remote databases (PostgreSQL, MySQL, SQL Server, Oracle, MongoDB, Cassandra) through DuckDB extensions.</p>
+    </div>
+    <div class="card">
+      <div class="icon">2️⃣</div>
+      <h4>Join, filter, compute</h4>
+      <p>Run full SQL in DuckDB: window functions, CTEs, spatial operations. Combine MinIO/S3, Parquet, and databases in one query.</p>
+    </div>
+    <div class="card">
+      <div class="icon">3️⃣</div>
+      <h4>Teach a local AI your business</h4>
+      <p>The MCP server exposes your tables, schema, and business context to a local LLM (Qwen via llama.cpp). Ask it in plain language.</p>
+    </div>
+    <div class="card">
+      <div class="icon">4️⃣</div>
+      <h4>Design data pipelines</h4>
+      <p>Schedule jobs with <code>toolkit.jobs</code>, run queries in parallel with <code>toolkit.parallel</code>, and export to Parquet or QVD.</p>
+    </div>
+    <div class="card">
+      <div class="icon">5️⃣</div>
+      <h4>Visualize results</h4>
+      <p>Build interactive Streamlit dashboards, or chart directly in Jupyter with matplotlib, seaborn, plotly, altair, bokeh, and holoviews.</p>
+    </div>
+    <div class="card">
+      <div class="icon">6️⃣</div>
+      <h4>Connect BI tools</h4>
+      <p>ODBC and JDBC drivers ship with the toolkit; plug Tableau, Power BI, or Qlik Sense straight into your DuckDB files.</p>
+    </div>
+  </div>
+</section>
+
 <section class="doc-section" id="installation">
   <h2>Installation <a href="#installation" class="anchor">#</a></h2>
   <p>
@@ -1615,10 +1744,10 @@ print(prompt)</code></pre>
   <p>Speech-to-text using OpenAI Whisper, fully offline.</p>
   <pre><button class="copy-btn">copy</button><code>from toolkit.transcribe import transcribe_to_text, transcribe_to_srt
 
-text = transcribe_to_text("audio/meeting.mp3", model="small", language="fa")
+text = transcribe_to_text("audio/meeting.mp3", model="small", language=None)
 print(text)
 
-transcribe_to_srt("audio/meeting.mp3", "exports/meeting.srt", language="fa")</code></pre>
+transcribe_to_srt("audio/meeting.mp3", "exports/meeting.srt", language=None)</code></pre>
 </section>
 
 <!-- ============ AI ============ -->
@@ -1676,7 +1805,7 @@ start_llama_cpp()
 
 payload = json.dumps({
     "model": "qwen2.5-1.5b-instruct",
-    "messages": [{"role": "user", "content": "Say hi in Persian"}],
+    "messages": [{"role": "user", "content": "Say hi in multilingual"}],
     "max_tokens": 50,
 }).encode()
 
@@ -1808,26 +1937,26 @@ print(prompt)
 
   <h3 id="advanced-whisper">Whisper (Speech-to-Text)</h3>
   <p>
-    Convert audio files to text locally. Supports 99 languages including Persian.
+    Convert audio files to text locally. Supports 99 many languages.
     Works fully offline after the model download.
   </p>
 
   <pre><button class="copy-btn">copy</button><code>from toolkit.transcribe import transcribe_to_text, transcribe_to_srt
 
 # Plain text
-text = transcribe_to_text("audio/meeting.mp3", model="small", language="fa")
+text = transcribe_to_text("audio/meeting.mp3", model="small", language=None)
 print(text)
 
 # With timestamps
 from toolkit.transcribe import transcribe_segments
-for seg in transcribe_segments("audio/meeting.mp3", language="fa"):
+for seg in transcribe_segments("audio/meeting.mp3", language=None):
     print(f"[{seg['start']:.1f}s - {seg['end']:.1f}s] {seg['text']}")
 
 # Save as SRT subtitle file
-transcribe_to_srt("audio/meeting.mp3", "exports/meeting.srt", language="fa")</code></pre>
+transcribe_to_srt("audio/meeting.mp3", "exports/meeting.srt", language=None)</code></pre>
 
   <table>
-    <thead><tr><th>Model</th><th>Size</th><th>Persian Quality</th><th>Speed on CPU</th></tr></thead>
+    <thead><tr><th>Model</th><th>Size</th><th>multilingual Quality</th><th>Speed on CPU</th></tr></thead>
     <tbody>
       <tr><td>tiny</td><td>75 MB</td><td>low</td><td>very fast</td></tr>
       <tr><td>base</td><td>142 MB</td><td>ok</td><td>fast</td></tr>

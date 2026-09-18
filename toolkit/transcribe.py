@@ -19,7 +19,7 @@ def _get_model(name: str = "small"):
 
 def transcribe(audio_path: str | Path,
                model: str = "small",
-               language: str | None = "fa") -> dict:
+               language: str | None = None) -> dict:
     """
     Transcribe an audio file to text.
 
@@ -29,9 +29,9 @@ def transcribe(audio_path: str | Path,
         Path to a .wav, .mp3, .flac, .ogg, or .m4a file.
     model : str
         Whisper model: tiny, base, small, medium, large.
-        'small' is recommended for Persian.
+        'small' is recommended for multilingual.
     language : str or None
-        Language code (e.g. 'fa' for Persian, 'en' for English).
+        Language code (e.g. 'fa' for multilingual, 'en' for English).
         Set to None for auto-detection.
 
     Returns
@@ -49,14 +49,14 @@ def transcribe(audio_path: str | Path,
 
 def transcribe_to_text(audio_path: str | Path,
                        model: str = "small",
-                       language: str | None = "fa") -> str:
+                       language: str | None = None) -> str:
     """Return only the transcribed text."""
     return transcribe(audio_path, model=model, language=language)["text"].strip()
 
 
 def transcribe_segments(audio_path: str | Path,
                         model: str = "small",
-                        language: str | None = "fa") -> list[dict]:
+                        language: str | None = None) -> list[dict]:
     """Return segments with timestamps (start, end, text)."""
     result = transcribe(audio_path, model=model, language=language)
     return [
@@ -72,7 +72,7 @@ def transcribe_segments(audio_path: str | Path,
 def transcribe_to_srt(audio_path: str | Path,
                       output_srt: str | Path,
                       model: str = "small",
-                      language: str | None = "fa") -> Path:
+                      language: str | None = None) -> Path:
     """Transcribe and save as an SRT subtitle file."""
     segments = transcribe_segments(audio_path, model=model, language=language)
     output_srt = Path(output_srt)

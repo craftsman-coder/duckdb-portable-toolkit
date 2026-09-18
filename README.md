@@ -1,10 +1,63 @@
 # DuckDB Toolkit
 
-A fully **portable** data + ML environment that runs inside Jupyter
-and Streamlit. Works on Windows and Linux. After the initial setup,
-everything runs **offline**.
+**DuckDB Toolkit** is a portable, offline-ready environment for working
+with data at high speed. It brings together DuckDB, JupyterLab,
+Streamlit, a local language model, and BI drivers inside one folder;
+no installation, no admin rights, no virtual environment.
 
-> 🌐 **<a href="https://craftsman-coder.github.io/duckdb-toolkit/" target="_blank" rel="noopener">View the interactive documentation online →</a>**
+It is built for the people who work with data every day:
+
+- **Data engineers** building pipelines and lakehouse workloads
+- **BI developers** prototyping metrics and reports
+- **Context engineers** who design the business context, data
+  dictionaries, and prompts that make a local AI useful for the
+  organization; they can also prepare geospatial, financial,
+  industrial, or any other kind of data for that purpose
+- **Data scientists** exploring datasets and training models
+- **Analysts** who want fast SQL, notebooks, and a local AI assistant
+
+With the included toolset you can:
+
+- Pull data from databases and files across many formats: Parquet, CSV, JSON, Excel, QVD, and remote databases (PostgreSQL, MySQL, SQL Server, Oracle, MongoDB, Cassandra, and more)
+- **Join and process them at high speed** in a single DuckDB query
+- **Transcribe audio files to text** locally with Whisper
+- **Teach a local AI** about your organization and ask it questions in plain language
+- **Design data pipelines** and schedule them
+- **See the results** as interactive tables and charts
+
+Run it on a laptop or a development server, online or offline, on
+**Windows, Linux, or macOS**. Just clone and start working.
+
+---
+
+## What you can do
+
+1. **Pull data from anywhere**
+   Read Parquet, CSV, JSON, Excel, QVD, and remote databases
+   (PostgreSQL, MySQL, SQL Server, Oracle, MongoDB, Cassandra)
+   through DuckDB extensions.
+
+2. **Join, filter, and compute**
+   Run full SQL in DuckDB with window functions, CTEs, and spatial
+   operations. Combine data from MinIO/S3, Parquet files, and
+   databases in one query.
+
+3. **Teach a local AI your business**
+   The MCP server exposes your tables, schema, and business context
+   to a local LLM (Qwen via llama.cpp). Ask it in plain language.
+
+4. **Design data pipelines**
+   Schedule jobs with `toolkit.jobs`, run queries in parallel with
+   `toolkit.parallel`, and export to Parquet / QVD.
+
+5. **Visualize results**
+   Build interactive Streamlit dashboards, or chart directly in
+   Jupyter with matplotlib, seaborn, plotly, altair, bokeh, and
+   holoviews.
+
+6. **Connect BI tools**
+   ODBC and JDBC drivers ship with the toolkit; plug Tableau,
+   Power BI, or Qlik Sense straight into your DuckDB files.
 
 ---
 
@@ -74,6 +127,66 @@ Inside JupyterLab:
 from toolkit.ui import start_streamlit
 start_streamlit("dashboards/01_orders_dashboard.py")
 ```
+
+---
+
+## Who is this for?
+
+| Role | What you get |
+|---|---|
+| **Data engineers** | DuckDB for lakehouse workloads, Iceberg / Delta / Lance support, job scheduler, parallel query runner, connectors to Spark / Kafka / Flink / Trino |
+| **BI developers** | 50+ Python packages, Streamlit dashboards, ODBC / JDBC drivers to plug into Tableau / Power BI / Qlik, one-click dashboards |
+| **Dashboard developers** | Streamlit + DuckDB for fast, refreshing dashboards on top of Parquet or live databases |
+| **Context engineers** | Geospatial (GeoPandas + DuckDB spatial), time series, Excel / CSV, QVD for Qlik |
+| **Data scientists** | pandas / polars / PyArrow, scikit-learn, XGBoost, LightGBM, PyTorch, MLflow, Optuna, ydata-profiling |
+| **Analysts** | JupyterLab for notebook analysis, DuckDB UI for direct SQL, local AI for Q&A on your data |
+
+---
+
+## All-in-one launchers
+
+After cloning, **every task** can be done with a double-click
+(Windows) or a single command (Linux / macOS / Git Bash).
+
+| Task | Windows | Linux / macOS / Git Bash |
+|---|---|---|
+| **Install** the toolkit | `setup.bat` | `./setup.sh` |
+| **Verify** the installation | `verify.bat` | `./verify.sh` |
+| Launch **JupyterLab** | `start-jupyter.bat` | `./start-jupyter.sh` |
+| Launch **Streamlit** dashboards | `start-streamlit.bat` | `./start-streamlit.sh` |
+| Launch **DuckDB UI** | `start-duck-ui.bat` | `./start-duck-ui.sh` |
+
+### First-time setup (in order)
+
+1. **Install**; double-click `setup.bat` (or run `./setup.sh`).
+   Choose a profile when prompted:
+   `1` light, `2` standard (recommended), `3` full, `4` custom.
+2. **Verify**; double-click `verify.bat` (or run `./verify.sh`).
+   All checks should show `[ok]`.
+3. **Start working**; double-click `start-jupyter.bat` (or `./start-jupyter.sh`).
+   The browser opens automatically at http://localhost:8888.
+
+On Linux / macOS, make the scripts executable once:
+
+```bash
+chmod +x setup.sh verify.sh start-*.sh
+```
+
+### DuckDB UI
+
+`start-duck-ui.bat` (Windows) or `start-duck-ui.sh` (Linux / macOS)
+launches the **DuckDB web UI** at http://localhost:4213.
+
+- SQL editor with syntax highlighting
+- Data explorer with tables and simple charts
+- File import from Parquet / CSV
+- Uses the `ui` extension, installed automatically by `setup`
+- **First launch downloads ~10 MB of frontend assets**; after that,
+  it works fully offline.
+
+> **Note:** DuckDB UI needs internet **only on the first launch** to
+> cache frontend assets. On an air-gapped server, launch it once
+> while online, then use it offline.
 
 ---
 
@@ -440,6 +553,8 @@ Delete the project folder. Nothing was installed on the system.
 ---
 
 ## Documentation
+
+- **Launcher scripts**; `setup.bat/.sh`, `verify.bat/.sh`, `start-*.bat/.sh` (see the table above)
 
 - 🌐 **[Interactive HTML guide (live)](https://craftsman-coder.github.io/duckdb-toolkit/)**, open in browser, no download needed
 - `docs/INSTALL_LINUX.md` - Linux install
