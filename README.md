@@ -367,7 +367,7 @@ search("my question", table_name="docs")
 
 ## Directory layout
 
-```
+```text
 duckdb-portable-toolkit/
 ├── config.yaml
 ├── configs/
@@ -378,38 +378,57 @@ duckdb-portable-toolkit/
 │   └── secrets.sql
 ├── setup.py
 ├── verify.py
-├── runtime/               <- created by setup.py
-│   ├── python/
-│   ├── venv/
-│   └── duckdb/
+├── runtime/                    <- created by setup.py
+│   ├── python/                 <- portable Python + packages
+│   ├── duckdb/                 <- CLI, extensions, BI drivers
+│   ├── llama.cpp/              <- AI engine
+│   ├── models/                 <- AI models (GGUF)
+│   ├── tiktoken_cache/         <- offline cache for Jupyter AI
+│   └── jupyter_config/         <- Jupyter settings
 ├── toolkit/
 │   ├── config.py
+│   ├── io_helpers.py
 │   ├── parallel.py
 │   ├── jobs.py
-│   ├── io_helpers.py
 │   ├── ml.py
 │   ├── lakehouse.py
 │   ├── ui.py
-│   ├── maintenance.py     <- user actions
-│   └── rag.py
-├── examples/
-├── dashboards/
-├── jobs/
-├── mcp/
+│   ├── maintenance.py
+│   ├── rag.py
+│   ├── transcribe.py
+│   └── bi_drivers.py
+├── examples/                   <- 21 example notebooks
+├── dashboards/                 <- 7 Streamlit apps
+├── notebooks/                  <- Your own Jupyter notebooks
+├── jobs/                       <- Scheduled job scripts
+├── mcp/                        <- MCP server for AI
 │   ├── server.py
 │   ├── manifest_generator.py
 │   ├── capabilities.md
-│   └── context/business.md
-├── docs/
+│   └── context/
+│       └── business.md
+├── docs/                       <- User guides
+│   ├── index.html              <- Interactive HTML guide
 │   ├── INSTALL_LINUX.md
 │   ├── CONNECT_DUCK_UI.md
-│   ├── MANIFEST_GENERATOR.md
+│   ├── CONNECT_BI_TOOLS.md
 │   ├── AI_MODELS.md
 │   ├── RAG.md
-│   └── OFFLINE_INSTALL.md
-└── offline/               <- for air-gapped transfers
-    ├── wheels/
-    └── extensions/
+│   ├── OFFLINE_INSTALL.md
+│   └── MANIFEST_GENERATOR.md
+├── data/                       <- Your data files
+├── exports/                    <- Output files
+├── reports/                    <- HTML reports
+├── mlruns/                     <- MLflow tracking
+├── logs/                       <- Job logs
+├── offline/                    <- Air-gapped transfers
+│   ├── wheels/
+│   └── extensions/
+│
+├── start-jupyter.bat           <- Windows launchers
+├── start-jupyter.sh            <- Linux/macOS launchers
+├── start-streamlit.bat
+└── start-streamlit.sh
 ```
 
 ---
