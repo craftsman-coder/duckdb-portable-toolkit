@@ -168,9 +168,9 @@ def print_banner() -> None:
 # Profile selection
 # ==================================================================
 PROFILE_INFO = [
-    ("1", "light",    "DuckDB + Jupyter",                     "~500 MB"),
-    ("2", "standard", "+ viz + ML + AI + MCP",                "~3-4 GB"),
-    ("3", "full",     "+ EDA + MLflow + all extensions",      "~10-12 GB"),
+    ("1", "light",    "DuckDB + Jupyter",                     "~700 MB"),
+    ("2", "standard", "+ viz + ML + AI + MCP",                "~2.5 GB"),
+    ("3", "full",     "+ EDA + MLflow + all extensions",      "~5.7 GB"),
     ("4", "custom",   "Like full, but you edit config first", "varies"),
 ]
 
