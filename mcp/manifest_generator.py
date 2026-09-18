@@ -24,14 +24,16 @@ MANIFEST = RUNTIME / "manifest.md"
 OS = platform.system().lower()
 
 
-def venv_python() -> Path:
-    return (RUNTIME / "venv" / "Scripts" / "python.exe" if OS == "windows"
-            else RUNTIME / "venv" / "bin" / "python")
+def python_exe() -> Path:
+    """Return the portable Python executable path."""
+    if OS == "windows":
+        return RUNTIME / "python" / "python.exe"
+    return RUNTIME / "python" / "bin" / "python3"
 
 
 def pip_list() -> list[dict]:
     """Return list of installed packages with versions."""
-    py = venv_python()
+    py = python_exe()
     if not py.exists():
         return []
     r = subprocess.run([str(py), "-m", "pip", "list", "--format=json"],
@@ -45,7 +47,7 @@ def pip_list() -> list[dict]:
 
 
 def duckdb_version() -> str:
-    py = venv_python()
+    py = python_exe()
     if not py.exists():
         return "not installed"
     r = subprocess.run([str(py), "-c", "import duckdb; print(duckdb.__version__)"],
@@ -55,7 +57,7 @@ def duckdb_version() -> str:
 
 def duckdb_extensions() -> list[dict]:
     """Return list of installed DuckDB extensions."""
-    py = venv_python()
+    py = python_exe()
     if not py.exists():
         return []
     ext_dir = RUNTIME / "duckdb" / "extensions"

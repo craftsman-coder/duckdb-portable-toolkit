@@ -8,9 +8,12 @@
 ## Our toolkit (use these when applicable)
 - toolkit.parallel.ParallelRunner — run many queries in parallel
 - toolkit.jobs.JobScheduler — schedule cron/interval jobs inside Jupyter
-- toolkit.lakehouse.{iceberg_attach, ducklake_attach, delta_scan, lance_scan, lance_write, paimon_scan}
+- toolkit.lakehouse.{iceberg_attach, ducklake_attach, delta_scan, lance_scan, lance_write}
 - toolkit.ml.{init_mlflow, track_run, log_regression_metrics, split, torch_device}
 - toolkit.io_helpers.{to_parquet, to_csv, to_qvd, read_any}
+- toolkit.rag.{create_index, search, build_prompt} — RAG with embeddings
+- toolkit.transcribe.{transcribe_to_text, transcribe_to_srt} — Whisper STT
+- toolkit.maintenance.{install_python_package, install_duckdb_extension, change_ai_model}
 ## Project conventions
 - Prefer DuckDB SQL for analytics
 - Write outputs to: exports/, reports/, data/, logs/, mlruns/
