@@ -22,10 +22,10 @@ Or from the terminal:
 
 ```bash
 # Windows
-runtime\venv\Scripts\pip.exe download statsmodels -d offline/wheels
+runtime\python\python.exe -m pip download statsmodels -d offline/wheels
 
 # Linux
-runtime/venv/bin/pip download statsmodels -d offline/wheels
+runtime/python/bin/python3 -m pip download statsmodels -d offline/wheels
 ```
 
 ### Step 2 - copy to the offline machine
@@ -67,7 +67,7 @@ This saves the file to `offline/extensions/httpfs.duckdb_extension`.
 Copy the `.duckdb_extension` file into:
 
 ```
-duckdb-portable-toolkit/runtime/duckdb/extensions/
+duckdb-portable-toolkit/runtime/duckdb/extensions/<version>/<platform>/
 ```
 
 ### Step 3 - on the offline machine
@@ -132,7 +132,7 @@ duckdb-portable-toolkit/
 │   ├── wheels/                <- .whl files for Python packages
 │   └── extensions/            <- .duckdb_extension files
 ├── runtime/
-│   ├── venv/                  <- installed Python packages
+│   ├── python/                <- portable Python + packages
 │   └── duckdb/
 │       └── extensions/        <- installed DuckDB extensions
 ├── mcp/

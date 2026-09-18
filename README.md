@@ -6,6 +6,9 @@ everything runs **offline**.
 
 ---
 
+> 📖 **Full interactive documentation:** open [`docs/index.html`](docs/index.html) in your browser
+> for a beautiful, searchable guide covering every package, extension, and module.
+
 ## Quick start
 
 ### 1. Clone
@@ -414,6 +417,7 @@ Delete the project folder. Nothing was installed on the system.
 
 ## Documentation
 
+- **Interactive HTML guide** → [`docs/index.html`](docs/index.html) — full visual documentation (open in browser)
 - `docs/INSTALL_LINUX.md` - Linux install
 - `docs/CONNECT_DUCK_UI.md` - Offline DuckDB UI
 - `docs/AI_MODELS.md` - Switch models, enable GPU

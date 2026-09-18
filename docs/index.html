@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DuckDB Portable Toolkit — Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f7f8fa;
+  --bg-code: #1e1e2e;
+  --bg-card: #ffffff;
+  --text: #1a1d23;
+  --text-dim: #5a6472;
+  --text-muted: #8b95a5;
+  --border: #e4e7ec;
+  --border-strong: #d0d5dd;
+  --accent: #0066ff;
+  --accent-soft: #e6f0ff;
+  --accent-dark: #0052cc;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --purple: #8b5cf6;
+  --pink: #ec4899;
+  --cyan: #06b6d4;
+  --shadow-sm: 0 1px 2px rgba(16,24,40,0.05);
+  --shadow: 0 4px 12px rgba(16,24,40,0.08);
+  --shadow-lg: 0 12px 32px rgba(16,24,40,0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+  --sidebar-w: 280px;
+  --header-h: 64px;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+}
+
+[data-theme="dark"] {
+  --bg: #0d1117;
+  --bg-alt: #161b22;
+  --bg-code: #0a0e14;
+  --bg-card: #161b22;
+  --text: #e6edf3;
+  --text-dim: #9ba6b1;
+  --text-muted: #6e7681;
+  --border: #30363d;
+  --border-strong: #484f58;
+  --accent: #58a6ff;
+  --accent-soft: #172e4d;
+  --accent-dark: #79b8ff;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 20px); }
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+  font-size: 15px;
+  transition: background 0.3s, color 0.3s;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========== HEADER ========== */
+header.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: saturate(180%) blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+  transition: background 0.3s, border-color 0.3s;
+}
+[data-theme="dark"] header.topbar {
+  background: rgba(13,17,23,0.85);
+}
+
+.topbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.topbar .brand-logo {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: var(--shadow-sm);
+}
+
+.topbar .brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.topbar .brand-text small {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.topbar .search-wrap {
+  margin-left: auto;
+  margin-right: 16px;
+  position: relative;
+  width: 280px;
+  max-width: 40vw;
+}
+.topbar .search-wrap input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-alt);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.topbar .search-wrap input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--bg);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.topbar .search-wrap svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.topbar .actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.topbar .icon-btn {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.topbar .icon-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.menu-btn { display: none; }
+
+/* ========== SIDEBAR ========== */
+aside.sidebar {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--bg-alt);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 24px 16px 40px;
+  z-index: 50;
+  transition: transform 0.3s ease, background 0.3s, border-color 0.3s;
+}
+aside.sidebar::-webkit-scrollbar { width: 6px; }
+aside.sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+aside.sidebar::-webkit-scrollbar-track { background: transparent; }
+
+.nav-group {
+  margin-bottom: 20px;
+}
+.nav-group-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  font-weight: 700;
+  padding: 8px 12px 6px;
+}
+.nav-group ul { list-style: none; }
+.nav-group a {
+  display: block;
+  padding: 7px 12px;
+  border-radius: 8px;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: all 0.15s;
+  position: relative;
+}
+.nav-group a:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.nav-group a.active {
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+}
+.nav-group a.active::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+
+/* ========== MAIN ========== */
+main.content {
+  margin-left: var(--sidebar-w);
+  padding-top: var(--header-h);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 48px 100px;
+}
+
+/* ========== HERO ========== */
+.hero {
+  padding: 64px 0 48px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+  position: relative;
+}
+.hero .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.hero .badge::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--text) 40%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p.lead {
+  font-size: 19px;
+  color: var(--text-dim);
+  max-width: 720px;
+  margin-bottom: 28px;
+  line-height: 1.55;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+}
+.hero .hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0,102,255,0.25);
+}
+.btn-primary:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,102,255,0.35);
+}
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-top: 40px;
+}
+.stat {
+  padding: 16px 20px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.stat .num {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+.stat .lbl {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* ========== SECTIONS ========== */
+section.doc-section {
+  padding: 40px 0;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: calc(var(--header-h) + 20px);
+}
+section.doc-section:last-of-type { border-bottom: none; }
+
+h2 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  margin-bottom: 12px;
+  scroll-margin-top: calc(var(--header-h) + 20px);
+}
+h2 .anchor {
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-left: 8px;
+  font-weight: 400;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+h2:hover .anchor { opacity: 1; }
+
+h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 36px 0 14px;
+  letter-spacing: -0.3px;
+}
+h4 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 24px 0 10px;
+  color: var(--text);
+}
+
+p { margin-bottom: 14px; color: var(--text-dim); }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+ul, ol {
+  margin: 0 0 16px 22px;
+  color: var(--text-dim);
+}
+li { margin-bottom: 6px; }
+
+/* ========== CODE BLOCKS ========== */
+pre {
+  position: relative;
+  background: var(--bg-code);
+  color: #e6edf3;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  margin: 14px 0 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.65;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+pre code {
+  font-family: inherit;
+  color: inherit;
+  background: none;
+  padding: 0;
+}
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+[data-theme="dark"] code {
+  background: rgba(88,166,255,0.15);
+  color: #79b8ff;
+}
+pre code { background: none; color: inherit; padding: 0; }
+
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  background: rgba(255,255,255,0.1);
+  color: #e6edf3;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s;
+}
+pre:hover .copy-btn { opacity: 1; }
+.copy-btn:hover { background: rgba(255,255,255,0.2); }
+.copy-btn.copied {
+  background: var(--success);
+  color: white;
+  border-color: var(--success);
+}
+
+/* Syntax colors */
+.tok-kw { color: #ff7b72; }
+.tok-str { color: #a5d6ff; }
+.tok-num { color: #79c0ff; }
+.tok-com { color: #8b949e; font-style: italic; }
+.tok-fn  { color: #d2a8ff; }
+.tok-op  { color: #ff7b72; }
+.tok-name { color: #c9d1d9; }
+
+/* ========== CARDS ========== */
+.grid {
+  display: grid;
+  gap: 16px;
+  margin: 20px 0;
+}
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: all 0.2s;
+}
+.card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+.card .icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+.card h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+.card p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
+/* ========== TABLES ========== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0 20px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+thead {
+  background: var(--bg-alt);
+}
+th {
+  text-align: left;
+  padding: 11px 16px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--bg-alt); }
+
+/* ========== CALLOUTS ========== */
+.callout {
+  display: flex;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  margin: 16px 0;
+  border: 1px solid;
+  font-size: 14px;
+}
+.callout .ico {
+  flex-shrink: 0;
+  font-size: 18px;
+  line-height: 1.4;
+}
+.callout .body { color: var(--text); }
+.callout .body strong { display: block; margin-bottom: 4px; }
+.callout.info {
+  background: var(--accent-soft);
+  border-color: rgba(0,102,255,0.2);
+}
+.callout.info .ico { color: var(--accent); }
+.callout.success {
+  background: rgba(16,185,129,0.08);
+  border-color: rgba(16,185,129,0.25);
+}
+.callout.success .ico { color: var(--success); }
+.callout.warning {
+  background: rgba(245,158,11,0.08);
+  border-color: rgba(245,158,11,0.25);
+}
+.callout.warning .ico { color: var(--warning); }
+.callout.danger {
+  background: rgba(239,68,68,0.08);
+  border-color: rgba(239,68,68,0.25);
+}
+.callout.danger .ico { color: var(--danger); }
+
+/* ========== TABS ========== */
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin: 20px 0 0;
+  overflow-x: auto;
+}
+.tab-btn {
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab-panel { display: none; padding-top: 20px; }
+.tab-panel.active { display: block; animation: fadeIn 0.25s; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== BADGES ========== */
+.pill {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.pill-core { background: rgba(0,102,255,0.12); color: var(--accent); }
+.pill-comm { background: rgba(139,92,246,0.12); color: var(--purple); }
+.pill-success { background: rgba(16,185,129,0.12); color: var(--success); }
+.pill-warn { background: rgba(245,158,11,0.12); color: var(--warning); }
+.pill-new { background: rgba(236,72,153,0.12); color: var(--pink); }
+
+/* ========== STEP LIST ========== */
+.steps {
+  counter-reset: step;
+  list-style: none;
+  margin: 20px 0;
+  padding: 0;
+}
+.steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 24px 52px;
+  margin: 0;
+  color: var(--text-dim);
+}
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0; top: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.steps li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 36px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--border);
+}
+.steps li strong {
+  display: block;
+  color: var(--text);
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+/* ========== TOC ========== */
+.toc {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 20px 0 32px;
+}
+.toc h4 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+}
+.toc ul {
+  columns: 2;
+  column-gap: 24px;
+  margin: 0;
+  list-style: none;
+  padding: 0;
+}
+.toc li { margin-bottom: 6px; }
+.toc a {
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.toc a:hover { color: var(--accent); }
+
+/* ========== SEARCH RESULTS ========== */
+.search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  max-height: 400px;
+  overflow-y: auto;
+  display: none;
+  z-index: 200;
+}
+.search-results.show { display: block; }
+.search-results a {
+  display: block;
+  padding: 10px 14px;
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.search-results a:last-child { border-bottom: none; }
+.search-results a:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.search-results a small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 11px;
+  margin-top: 2px;
+}
+.search-results .empty {
+  padding: 14px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ========== FOOTER ========== */
+footer {
+  margin-left: var(--sidebar-w);
+  padding: 40px 48px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  :root { --sidebar-w: 260px; }
+  .container { padding: 32px 24px 80px; }
+  .hero h1 { font-size: 34px; }
+  .hero p.lead { font-size: 16px; }
+  .toc ul { columns: 1; }
+}
+@media (max-width: 720px) {
+  aside.sidebar {
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
+  }
+  aside.sidebar.open { transform: translateX(0); }
+  main.content, footer { margin-left: 0; }
+  .menu-btn { display: flex; }
+  .topbar .brand-text small { display: none; }
+  .topbar .search-wrap { width: 180px; }
+  .hero h1 { font-size: 28px; }
+  h2 { font-size: 24px; }
+  pre { font-size: 12px; padding: 14px; }
+}
+
+/* Scrollbar for main */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+::-webkit-scrollbar-track { background: var(--bg-alt); }
+
+/* Progress bar */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--purple));
+  z-index: 200;
+  transition: width 0.1s;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<header class="topbar">
+  <button class="icon-btn menu-btn" onclick="toggleSidebar()" aria-label="Menu">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+
+  <a href="#overview" class="brand">
+    <div class="brand-logo">D</div>
+    <div class="brand-text">
+      <span>DuckDB Portable Toolkit</span>
+      <small>Documentation</small>
+    </div>
+  </a>
+
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Search documentation..." autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <div class="actions">
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">
+      <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <nav>
+    <div class="nav-group">
+      <div class="nav-group-title">Getting Started</div>
+      <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#launching">Launching Apps</a></li>
+        <li><a href="#structure">Project Structure</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Python Packages</div>
+      <ul>
+        <li><a href="#pkg-core">Core Data Stack</a></li>
+        <li><a href="#pkg-jupyter">Jupyter</a></li>
+        <li><a href="#pkg-viz">Visualization</a></li>
+        <li><a href="#pkg-streamlit">Streamlit</a></li>
+        <li><a href="#pkg-eda">EDA</a></li>
+        <li><a href="#pkg-quality">Data Quality</a></li>
+        <li><a href="#pkg-ml">Machine Learning</a></li>
+        <li><a href="#pkg-mlops">MLOps</a></li>
+        <li><a href="#pkg-cloud">Cloud & Files</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">DuckDB Extensions</div>
+      <ul>
+        <li><a href="#ext-core">Core Extensions</a></li>
+        <li><a href="#ext-community">Community</a></li>
+        <li><a href="#ext-databases">Database Connectors</a></li>
+        <li><a href="#ext-lakehouse">Lakehouse</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Toolkit Modules</div>
+      <ul>
+        <li><a href="#mod-config">toolkit.config</a></li>
+        <li><a href="#mod-io">toolkit.io_helpers</a></li>
+        <li><a href="#mod-parallel">toolkit.parallel</a></li>
+        <li><a href="#mod-jobs">toolkit.jobs</a></li>
+        <li><a href="#mod-ml">toolkit.ml</a></li>
+        <li><a href="#mod-lakehouse">toolkit.lakehouse</a></li>
+        <li><a href="#mod-ui">toolkit.ui</a></li>
+        <li><a href="#mod-maint">toolkit.maintenance</a></li>
+        <li><a href="#mod-rag">toolkit.rag</a></li>
+        <li><a href="#mod-transcribe">toolkit.transcribe</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">AI Assistant</div>
+      <ul>
+        <li><a href="#ai-overview">Overview</a></li>
+        <li><a href="#ai-llamacpp">llama.cpp</a></li>
+        <li><a href="#ai-models">Models</a></li>
+        <li><a href="#ai-mcp">MCP Server</a></li>
+        <li><a href="#ai-business">Business Context</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Advanced</div>
+      <ul>
+        <li><a href="#advanced-rag">RAG</a></li>
+        <li><a href="#advanced-whisper">Whisper</a></li>
+        <li><a href="#advanced-offline">Offline Install</a></li>
+        <li><a href="#advanced-gpu">GPU Acceleration</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Help</div>
+      <ul>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+        <li><a href="#license">License</a></li>
+      </ul>
+    </div>
+  </nav>
+</aside>
+
+<main class="content">
+<div class="container">
+
+<!-- ============ HERO ============ -->
+<div class="hero" id="overview">
+  <div class="badge">v2.0 · Portable & Offline</div>
+  <h1>DuckDB Portable Toolkit</h1>
+  <p class="lead">
+    A complete, self-contained data and AI environment that runs inside Jupyter and Streamlit.
+    No system Python, no virtual environment, no admin rights required. Just clone and run.
+    Works on Windows, Linux, and macOS — move the folder anywhere and everything still works.
+  </p>
+  <div class="hero-actions">
+    <a href="#installation" class="btn btn-primary">
+      Get Started
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+    <a href="#pkg-core" class="btn btn-secondary">Browse Packages</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat"><div class="num">50+</div><div class="lbl">Python Packages</div></div>
+    <div class="stat"><div class="num">22</div><div class="lbl">DuckDB Extensions</div></div>
+    <div class="stat"><div class="num">1 GB</div><div class="lbl">AI Model Included</div></div>
+    <div class="stat"><div class="num">0</div><div class="lbl">System Modifications</div></div>
+  </div>
+</div>
+
+<!-- ============ INSTALLATION ============ -->
+<section class="doc-section" id="installation">
+  <h2>Installation <a href="#installation" class="anchor">#</a></h2>
+  <p>
+    The toolkit installs everything inside the project folder: a portable Python interpreter,
+    DuckDB binary, all Python packages, and the AI model. Nothing touches your system.
+  </p>
+
+  <div class="callout info">
+    <div class="ico">ℹ</div>
+    <div class="body">
+      <strong>Prerequisites</strong>
+      Only one thing is needed: a system Python 3.9+ to run <code>setup.py</code> itself. After that, everything uses the portable Python.
+    </div>
+  </div>
+
+  <h3>Step-by-step</h3>
+  <ol class="steps">
+    <li>
+      <strong>Clone the repository</strong>
+      <pre><button class="copy-btn">copy</button><code>git clone https://github.com/YOUR-USERNAME/duckdb-portable-toolkit.git
+cd duckdb-portable-toolkit</code></pre>
+    </li>
+    <li>
+      <strong>Run the setup script</strong>
+      You'll be asked to choose an installation profile.
+      <pre><button class="copy-btn">copy</button><code>python setup.py</code></pre>
+    </li>
+    <li>
+      <strong>Verify installation</strong>
+      <pre><button class="copy-btn">copy</button><code>python verify.py</code></pre>
+      All checks should show <code>[ok]</code>. If any fail, run <code>python setup.py</code> again.
+    </li>
+    <li>
+      <strong>Launch JupyterLab</strong>
+      <pre><button class="copy-btn">copy</button><code># Windows
+start-jupyter.bat
+
+# Linux / macOS / Git Bash
+./start-jupyter.sh</code></pre>
+    </li>
+  </ol>
+
+  <h3>Installation Profiles</h3>
+  <p>Choose the profile that fits your needs. You can always re-run <code>setup.py</code> later.</p>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Profile</th><th>Includes</th><th>Size</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><strong>light</strong></td><td>DuckDB + Jupyter + core packages</td><td>~500 MB</td></tr>
+      <tr><td>2</td><td><strong>standard</strong></td><td>+ visualization + ML + AI + MCP</td><td>~3-4 GB</td></tr>
+      <tr><td>3</td><td><strong>full</strong></td><td>+ EDA + MLflow + all extensions</td><td>~10-12 GB</td></tr>
+      <tr><td>4</td><td><strong>custom</strong></td><td>Like full, but you edit config first</td><td>varies</td></tr>
+    </tbody>
+  </table>
+
+  <p>Skip the prompt with a flag:</p>
+  <pre><button class="copy-btn">copy</button><code>python setup.py --profile standard</code></pre>
+
+  <div class="callout success">
+    <div class="ico">✓</div>
+    <div class="body">
+      <strong>One-time internet</strong>
+      Internet is needed only during setup to download packages and the AI model. After that, everything works offline.
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAUNCHING ============ -->
+<section class="doc-section" id="launching">
+  <h2>Launching Apps <a href="#launching" class="anchor">#</a></h2>
+
+  <h3>JupyterLab</h3>
+  <p>Three ways to start JupyterLab. Pick whichever is easiest.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="jup-win">Windows</button>
+    <button class="tab-btn" data-tab="jup-lin">Linux / macOS</button>
+    <button class="tab-btn" data-tab="jup-term">Terminal</button>
+  </div>
+  <div class="tab-panel active" id="jup-win">
+    <p>Double-click <code>start-jupyter.bat</code> in the project folder.</p>
+  </div>
+  <div class="tab-panel" id="jup-lin">
+    <p>Double-click <code>start-jupyter.sh</code>, or run it from a terminal:</p>
+    <pre><button class="copy-btn">copy</button><code>chmod +x start-jupyter.sh   # first time only
+./start-jupyter.sh</code></pre>
+  </div>
+  <div class="tab-panel" id="jup-term">
+    <pre><button class="copy-btn">copy</button><code># Windows
+runtime\python\python.exe -m jupyterlab
+
+# Linux / macOS
+runtime/python/bin/python3 -m jupyterlab</code></pre>
+  </div>
+
+  <p>After it starts, the terminal prints a URL:</p>
+  <pre><button class="copy-btn">copy</button><code>http://localhost:8888/lab?token=594bf1da49163f5649798767c6a9c2c6b73179c7e2059875</code></pre>
+  <p>Copy the full URL (including the token) and open it in your browser.</p>
+
+  <div class="callout warning">
+    <div class="ico">!</div>
+    <div class="body">
+      <strong>Choose the right kernel</strong>
+      In JupyterLab, click the kernel selector in the top-right and choose
+      <strong>DuckDB Toolkit (portable)</strong>. Without this, <code>import toolkit</code> will fail.
+    </div>
+  </div>
+
+  <h3>Streamlit Dashboards</h3>
+  <p>The Streamlit launcher shows an interactive menu of all available dashboards:</p>
+  <pre><button class="copy-btn">copy</button><code># Windows
+start-streamlit.bat
+
+# Linux / macOS / Git Bash
+./start-streamlit.sh</code></pre>
+  <p>Select a number to launch a specific dashboard, or press <code>Q</code> to quit.</p>
+
+  <h3>DuckDB UI</h3>
+  <p>An offline web UI for exploring databases visually:</p>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.ui import start_duck_ui
+start_duck_ui()
+# Opens http://localhost:5522</code></pre>
+</section>
+
+<!-- ============ STRUCTURE ============ -->
+<section class="doc-section" id="structure">
+  <h2>Project Structure <a href="#structure" class="anchor">#</a></h2>
+  <pre><button class="copy-btn">copy</button><code>duckdb-portable-toolkit/
+├── setup.py                    # One-click installer
+├── verify.py                   # Installation checker
+├── config.yaml                 # Active configuration
+│
+├── configs/                    # Profile configs + secrets
+│   ├── config.light.yaml
+│   ├── config.standard.yaml
+│   ├── config.full.yaml
+│   ├── config.custom.yaml
+│   └── secrets.sql             # Your DB credentials
+│
+├── runtime/                    # Everything portable lives here
+│   ├── python/                 # Portable Python 3.12
+│   ├── duckdb/                 # DuckDB CLI + extensions
+│   ├── llama.cpp/              # llama-server binary
+│   ├── models/                 # GGUF model files
+│   ├── tiktoken_cache/         # Offline tiktoken cache
+│   └── jupyter_config/         # Jupyter settings
+│
+├── toolkit/                    # Our helper library
+│   ├── config.py
+│   ├── io_helpers.py
+│   ├── parallel.py
+│   ├── jobs.py
+│   ├── ml.py
+│   ├── lakehouse.py
+│   ├── ui.py
+│   ├── maintenance.py
+│   ├── rag.py
+│   └── transcribe.py
+│
+├── examples/                   # 21 example notebooks
+├── dashboards/                 # 7 Streamlit apps
+├── jobs/                       # Scheduled job scripts
+├── mcp/                        # MCP server for AI
+│   ├── server.py
+│   ├── manifest_generator.py
+│   ├── capabilities.md
+│   └── context/business.md
+├── docs/                       # User guides
+├── data/                       # Your data files
+├── exports/                    # Output files
+├── reports/                    # HTML reports
+├── mlruns/                     # MLflow tracking
+│
+├── start-jupyter.bat           # Windows launcher
+├── start-jupyter.sh            # Linux launcher
+├── start-streamlit.bat
+└── start-streamlit.sh</code></pre>
+</section>
+
+<!-- ============ PYTHON PACKAGES ============ -->
+<section class="doc-section" id="pkg-core">
+  <h2>Python Packages <a href="#pkg-core" class="anchor">#</a></h2>
+  <p>
+    The toolkit installs a curated set of Python packages chosen for data engineering,
+    analytics, and machine learning. Everything below runs on CPU by default.
+  </p>
+
+  <h3 id="pkg-core-inner">Core Data Stack</h3>
+  <p>The foundation: fast analytics, data manipulation, and I/O.</p>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">🦆</div>
+      <h4>DuckDB</h4>
+      <p>In-process analytical database. Extremely fast SQL on Parquet, CSV, and native tables. Supports ACID, lakehouse formats, and hundreds of extensions.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🐼</div>
+      <h4>pandas</h4>
+      <p>The classic DataFrame library. Ideal for tabular data manipulation, joins, pivots, and time-series analysis.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🚀</div>
+      <h4>polars</h4>
+      <p>A modern, Rust-based DataFrame library. 10-100× faster than pandas for large datasets. Uses lazy evaluation.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🏹</div>
+      <h4>pyarrow</h4>
+      <p>Apache Arrow bindings. Zero-copy data exchange between tools. The backbone of modern columnar data.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔢</div>
+      <h4>NumPy</h4>
+      <p>N-dimensional arrays and numerical computing. Foundation for scikit-learn, PyTorch, and almost all scientific Python.</p>
+    </div>
+  </div>
+
+  <h3 id="pkg-jupyter">Jupyter & Notebooks</h3>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">📓</div>
+      <h4>JupyterLab</h4>
+      <p>Full IDE in the browser: notebooks, terminals, file browser, and extensions.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔮</div>
+      <h4>JupySQL</h4>
+      <p>Run SQL directly in cells with <code>%sql</code> magic. Works with DuckDB, PostgreSQL, MySQL, and more.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🤖</div>
+      <h4>Jupyter AI</h4>
+      <p>Chat with your AI assistant inside JupyterLab. Connected to the local llama.cpp server.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🧩</div>
+      <h4>ipywidgets</h4>
+      <p>Interactive widgets for notebooks. Sliders, dropdowns, and controls without leaving the cell.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔌</div>
+      <h4>ipykernel</h4>
+      <p>Jupyter kernel for Python. Registers the <em>DuckDB Toolkit (portable)</em> kernel.</p>
+    </div>
+  </div>
+
+  <h3 id="pkg-viz">Visualization</h3>
+  <p>From static publication-quality charts to interactive web dashboards.</p>
+  <table>
+    <thead><tr><th>Package</th><th>Best For</th><th>Output</th></tr></thead>
+    <tbody>
+      <tr><td><strong>matplotlib</strong></td><td>Static charts, publication quality</td><td>PNG, SVG, PDF</td></tr>
+      <tr><td><strong>seaborn</strong></td><td>Statistical plots, distribution analysis</td><td>PNG, SVG</td></tr>
+      <tr><td><strong>plotly</strong></td><td>Interactive charts for web and notebooks</td><td>HTML, PNG</td></tr>
+      <tr><td><strong>altair</strong></td><td>Declarative charts from DataFrames</td><td>Vega-Lite JSON</td></tr>
+      <tr><td><strong>bokeh</strong></td><td>Interactive dashboards and streaming data</td><td>HTML</td></tr>
+      <tr><td><strong>holoviews</strong></td><td>High-level API over Bokeh/matplotlib</td><td>HTML, PNG</td></tr>
+      <tr><td><strong>kaleido</strong></td><td>Static image export from Plotly</td><td>PNG, SVG, PDF</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="pkg-streamlit">Streamlit</h3>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">🎨</div>
+      <h4>streamlit</h4>
+      <p>Build data apps with pure Python. No HTML, CSS, or JavaScript needed.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📊</div>
+      <h4>streamlit-aggrid</h4>
+      <p>Excel-like tables with pagination, filtering, and sorting. Powered by AG Grid.</p>
+    </div>
+  </div>
+
+  <h3 id="pkg-eda">Exploratory Data Analysis</h3>
+  <p>Quickly profile, visualize, and understand any dataset.</p>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">📈</div>
+      <h4>ydata-profiling</h4>
+      <p>One-line HTML report: distributions, correlations, missing values, warnings.</p>
+      <pre><button class="copy-btn">copy</button><code>from ydata_profiling import ProfileReport
+ProfileReport(df).to_file("report.html")</code></pre>
+    </div>
+    <div class="card">
+      <div class="icon">🔍</div>
+      <h4>missingno</h4>
+      <p>Visualize missing data patterns with matrix, bar, heatmap, and dendrogram.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📊</div>
+      <h4>sweetviz</h4>
+      <p>Compare two DataFrames side-by-side. Great for train vs test, before vs after.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🎯</div>
+      <h4>autoviz</h4>
+      <p>Automatically generates the most relevant charts for a DataFrame.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🖥</div>
+      <h4>dtale</h4>
+      <p>Interactive web interface for exploring DataFrames. Filter, chart, and export.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🏎</div>
+      <h4>lazypredict</h4>
+      <p>Build and compare dozens of baseline ML models with one line of code.</p>
+    </div>
+  </div>
+
+  <h3 id="pkg-quality">Data Quality</h3>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">✅</div>
+      <h4>pandera</h4>
+      <p>Declarative DataFrame schema validation. Like Pydantic for pandas.</p>
+      <pre><button class="copy-btn">copy</button><code>import pandera as pa
+schema = pa.DataFrameSchema({
+    "age": pa.Column(int, pa.Check.ge(0)),
+})
+schema.validate(df)</code></pre>
+    </div>
+    <div class="card">
+      <div class="icon">🛡</div>
+      <h4>Great Expectations</h4>
+      <p>Enterprise-grade data validation. Define expectations, run checks, get reports.</p>
+    </div>
+  </div>
+
+  <h3 id="pkg-ml">Machine Learning</h3>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">🧠</div>
+      <h4>scikit-learn</h4>
+      <p>The standard ML library. Classification, regression, clustering, preprocessing.</p>
+    </div>
+    <div class="card">
+      <div class="icon">⚡</div>
+      <h4>XGBoost</h4>
+      <p>Gradient boosting. Usually wins Kaggle competitions on tabular data.</p>
+    </div>
+    <div class="card">
+      <div class="icon">💡</div>
+      <h4>LightGBM</h4>
+      <p>Faster gradient boosting from Microsoft. Great for large datasets.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔥</div>
+      <h4>PyTorch</h4>
+      <p>Deep learning framework. CPU-only build included by default.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🤗</div>
+      <h4>Transformers</h4>
+      <p>State-of-the-art NLP models: BERT, GPT, T5, and thousands more.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📚</div>
+      <h4>datasets</h4>
+      <p>Access to thousands of public datasets with a single function call.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🎭</div>
+      <h4>sentence-transformers</h4>
+      <p>Text embeddings for semantic search, clustering, and RAG.</p>
+    </div>
+  </div>
+
+  <h3 id="pkg-mlops">MLOps</h3>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">📉</div>
+      <h4>MLflow</h4>
+      <p>Track experiments, log metrics, save models, and compare runs.</p>
+      <pre><button class="copy-btn">copy</button><code>from toolkit.ml import init_mlflow, track_run
+init_mlflow("my-experiment")
+with track_run("run-1"):
+    mlflow.log_metric("accuracy", 0.95)</code></pre>
+    </div>
+    <div class="card">
+      <div class="icon">🎯</div>
+      <h4>Optuna</h4>
+      <p>Automatic hyperparameter tuning. Define a search space, let Optuna find the best.</p>
+    </div>
+  </div>
+
+  <h3 id="pkg-cloud">Cloud & File Formats</h3>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">☁</div>
+      <h4>boto3</h4>
+      <p>AWS SDK. Works with S3, MinIO, and any S3-compatible storage.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📗</div>
+      <h4>openpyxl</h4>
+      <p>Read and write Excel files (.xlsx) with full styling support.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔷</div>
+      <h4>qvdrs</h4>
+      <p>Read and write Qlik QVD files directly from Python.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DUCKDB EXTENSIONS ============ -->
+<section class="doc-section" id="ext-core">
+  <h2>DuckDB Extensions <a href="#ext-core" class="anchor">#</a></h2>
+  <p>
+    DuckDB extensions add support for new file formats, databases, and capabilities.
+    Core extensions come from the official DuckDB repository. Community extensions come
+    from the <a href="https://github.com/duckdb/community-extensions" target="_blank">community repository</a>.
+  </p>
+
+  <h3>Core Extensions</h3>
+  <p>Official, well-tested, and stable. Installed automatically with any profile.</p>
+  <table>
+    <thead><tr><th>Extension</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>parquet</code></td><td>Read and write Parquet files</td></tr>
+      <tr><td><code>json</code></td><td>Read and write JSON</td></tr>
+      <tr><td><code>icu</code></td><td>Unicode collation and timezones</td></tr>
+      <tr><td><code>httpfs</code></td><td>Access HTTP and S3 from SQL</td></tr>
+      <tr><td><code>fts</code></td><td>Full-text search with stemming</td></tr>
+      <tr><td><code>vss</code></td><td>Vector similarity search (for embeddings)</td></tr>
+      <tr><td><code>inet</code></td><td>Network data types and functions</td></tr>
+      <tr><td><code>postgres_scanner</code></td><td>Query PostgreSQL databases</td></tr>
+      <tr><td><code>mysql_scanner</code></td><td>Query MySQL and MariaDB</td></tr>
+      <tr><td><code>sqlite_scanner</code></td><td>Query SQLite files</td></tr>
+      <tr><td><code>odbc_scanner</code></td><td>Query any ODBC source</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="ext-lakehouse">Lakehouse Extensions</h3>
+  <p>Connect DuckDB to modern data lake formats.</p>
+  <table>
+    <thead><tr><th>Extension</th><th>Format</th><th>Read</th><th>Write</th></tr></thead>
+    <tbody>
+      <tr><td><code>iceberg</code></td><td>Apache Iceberg</td><td class="pill-success">✓</td><td class="pill-success">✓</td></tr>
+      <tr><td><code>delta</code></td><td>Delta Lake</td><td class="pill-success">✓</td><td class="pill-warn">partial</td></tr>
+      <tr><td><code>ducklake</code></td><td>DuckLake</td><td class="pill-success">✓</td><td class="pill-success">✓</td></tr>
+      <tr><td><code>lance</code></td><td>Lance (AI datasets)</td><td class="pill-success">✓</td><td class="pill-success">✓</td></tr>
+    </tbody>
+  </table>
+
+  <pre><button class="copy-btn">copy</button><code>-- Query an Iceberg table
+ATTACH 'http://polaris:8181/api/catalog' AS ice (TYPE iceberg, ENDPOINT 'lakehouse');
+SELECT * FROM ice.default.orders LIMIT 10;
+
+-- Read a Delta table
+SELECT * FROM delta_scan('s3://bucket/delta/orders');
+
+-- Query a Lance dataset
+SELECT * FROM 'exports/lance/embeddings.lance' LIMIT 5;</code></pre>
+
+  <h3 id="ext-databases">Database Connectors</h3>
+  <p>
+    Some connectors come from Core, others from Community. All are installed automatically.
+  </p>
+  <table>
+    <thead><tr><th>Database</th><th>Extension</th><th>Repository</th></tr></thead>
+    <tbody>
+      <tr><td>PostgreSQL</td><td><code>postgres_scanner</code></td><td><span class="pill pill-core">core</span></td></tr>
+      <tr><td>MySQL / MariaDB</td><td><code>mysql_scanner</code></td><td><span class="pill pill-core">core</span></td></tr>
+      <tr><td>SQLite</td><td><code>sqlite_scanner</code></td><td><span class="pill pill-core">core</span></td></tr>
+      <tr><td>Oracle</td><td><code>oracle_scanner</code></td><td><span class="pill pill-comm">community</span></td></tr>
+      <tr><td>SQL Server</td><td><code>mssql</code></td><td><span class="pill pill-comm">community</span></td></tr>
+      <tr><td>MongoDB</td><td><code>mongo</code></td><td><span class="pill pill-comm">community</span></td></tr>
+      <tr><td>Cassandra</td><td><code>cassandra</code></td><td><span class="pill pill-comm">community</span></td></tr>
+      <tr><td>Any ODBC</td><td><code>odbc_scanner</code></td><td><span class="pill pill-core">core</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="ext-community">Community Extensions</h3>
+  <table>
+    <thead><tr><th>Extension</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>qvd</code></td><td>Read/write Qlik QVD files</td></tr>
+      <tr><td><code>pbix</code></td><td>Read Power BI PBIX files</td></tr>
+      <tr><td><code>ai</code></td><td>LLM functions (summarize, classify, embed)</td></tr>
+      <tr><td><code>ui</code></td><td>DuckDB web UI (needs internet first time)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <div class="ico">ℹ</div>
+    <div class="body">
+      <strong>Installing extensions</strong>
+      You can install more extensions anytime with <code>toolkit.maintenance.install_duckdb_extension()</code>
+      or from SQL with <code>INSTALL name;</code>.
+    </div>
+  </div>
+</section>
+
+<!-- ============ TOOLKIT MODULES ============ -->
+<section class="doc-section" id="mod-config">
+  <h2>Toolkit Modules <a href="#mod-config" class="anchor">#</a></h2>
+  <p>
+    The <code>toolkit</code> package contains helper functions we wrote to make common
+    tasks simple. Import them in any Jupyter cell.
+  </p>
+
+  <h3 id="mod-config-inner">toolkit.config</h3>
+  <p>Loads <code>config.yaml</code> and exposes all resolved paths.</p>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.config import (
+    ROOT_DIR, DATA_DIR, EXPORTS_DIR, DUCKDB_EXE, load, paths,
+)
+
+print(ROOT_DIR)      # Path to project root
+print(DATA_DIR)      # Path to data/
+print(DUCKDB_EXE)    # Path to duckdb.exe</code></pre>
+
+  <h3 id="mod-io">toolkit.io_helpers</h3>
+  <p>Simple wrappers for reading and writing common formats.</p>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.io_helpers import to_parquet, to_csv, to_qvd, read_any
+import duckdb
+
+con = duckdb.connect()
+to_parquet(con, "SELECT * FROM sales", "exports/sales.parquet")
+to_csv(con, "SELECT * FROM sales", "exports/sales.csv")
+to_qvd(con, "SELECT * FROM sales", "exports/sales.qvd")
+
+df = read_any("exports/sales.parquet")</code></pre>
+
+  <h3 id="mod-parallel">toolkit.parallel</h3>
+  <p>Run multiple DuckDB queries concurrently. Uses one cursor per thread.</p>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.parallel import ParallelRunner
+
+with ParallelRunner("db.duckdb", max_workers=4) as runner:
+    results = runner.run([
+        ("q1", "SELECT * FROM big_table WHERE year = 2024"),
+        ("q2", "SELECT count(*) FROM another_table"),
+        ("q3", "SELECT avg(amount) FROM orders"),
+    ])
+
+for r in results:
+    print(r.query_id, r.status, f"{r.elapsed:.2f}s")</code></pre>
+
+  <h3 id="mod-jobs">toolkit.jobs</h3>
+  <p>Schedule recurring tasks from inside Jupyter (uses APScheduler).</p>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.jobs import JobScheduler
+
+scheduler = JobScheduler()
+scheduler.add_cron_job(
+    "daily_export",
+    "jobs/example_daily_export.py",
+    hour=0, minute=30,
+)
+scheduler.start()
+
+# Test immediately
+scheduler.run_now("daily_export")
+
+# List scheduled jobs
+print(scheduler.list_jobs())</code></pre>
+
+  <h3 id="mod-ml">toolkit.ml</h3>
+  <p>Helpers for MLflow tracking and PyTorch utilities.</p>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.ml import (
+    init_mlflow, track_run, log_regression_metrics,
+    split, torch_device, torch_dataloader,
+)
+
+init_mlflow("my-experiment")
+
+X_train, X_test, y_train, y_test = split(df, target="y")
+
+with track_run("run-1", params={"lr": 0.001}):
+    model.fit(X_train, y_train)
+    preds = model.predict(X_test)
+    print(log_regression_metrics(y_test, preds))
+    mlflow.sklearn.log_model(model, "model")</code></pre>
+
+  <h3 id="mod-lakehouse">toolkit.lakehouse</h3>
+  <p>Connect to Iceberg, Delta, DuckLake, Lance, and Paimon.</p>
+  <pre><button class="copy-btn">copy</button><code>import duckdb
+from toolkit.lakehouse import (
+    iceberg_attach, ducklake_attach,
+    delta_scan, lance_scan, lance_write,
+)
+
+con = duckdb.connect()
+iceberg_attach(con, "http://polaris:8181/api/catalog", "lakehouse", alias="ice")
+print(con.execute("SELECT * FROM ice.default.orders LIMIT 5").fetchdf())
+
+delta_scan(con, "s3://bucket/delta/orders")
+lance_write(con, "SELECT * FROM clean_data", "exports/data.lance")</code></pre>
+
+  <h3 id="mod-ui">toolkit.ui</h3>
+  <p>Launch AI servers, Streamlit, and the DuckDB UI.</p>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.ui import (
+    start_llama_cpp, stop_llama_cpp,
+    start_streamlit, start_duck_ui,
+)
+
+start_llama_cpp()                                    # AI server
+start_streamlit("dashboards/01_orders_dashboard.py") # Dashboard
+start_duck_ui()                                      # DuckDB web UI</code></pre>
+
+  <h3 id="mod-maint">toolkit.maintenance</h3>
+  <p>Install new packages, extensions, and switch AI models.</p>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.maintenance import (
+    install_python_package,
+    install_duckdb_extension,
+    change_ai_model,
+    list_ai_models,
+    refresh_ai_docs,
+)
+
+install_python_package("statsmodels")
+install_duckdb_extension("spatial")
+list_ai_models()
+change_ai_model("qwen2.5-7b")
+refresh_ai_docs()</code></pre>
+
+  <h3 id="mod-rag">toolkit.rag</h3>
+  <p>Retrieval-augmented generation: give the AI access to your documents.</p>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.rag import create_index, search, build_prompt
+
+create_index("data/docs", table_name="knowledge")
+
+results = search("What is our refund policy?", table_name="knowledge", k=3)
+for r in results:
+    print(f"[{r['score']:.3f}] {r['source']}: {r['text'][:100]}")
+
+prompt = build_prompt("What is our refund policy?", table_name="knowledge")
+print(prompt)</code></pre>
+
+  <h3 id="mod-transcribe">toolkit.transcribe</h3>
+  <p>Speech-to-text using OpenAI Whisper, fully offline.</p>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.transcribe import transcribe_to_text, transcribe_to_srt
+
+text = transcribe_to_text("audio/meeting.mp3", model="small", language="fa")
+print(text)
+
+transcribe_to_srt("audio/meeting.mp3", "exports/meeting.srt", language="fa")</code></pre>
+</section>
+
+<!-- ============ AI ============ -->
+<section class="doc-section" id="ai-overview">
+  <h2>AI Assistant <a href="#ai-overview" class="anchor">#</a></h2>
+  <p>
+    The toolkit includes a fully local AI assistant powered by <strong>llama.cpp</strong>.
+    No cloud, no API keys, works offline after the initial model download.
+  </p>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="icon">💬</div>
+      <h4>Local Chat</h4>
+      <p>Talk to your AI in JupyterLab's chat panel. It can query your database through MCP.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔌</div>
+      <h4>MCP Integration</h4>
+      <p>Model Context Protocol exposes your tables, schema, and business rules to the AI.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📚</div>
+      <h4>RAG Ready</h4>
+      <p>Give the AI access to your PDFs, Markdown files, and business documents.</p>
+    </div>
+    <div class="card">
+      <div class="icon">⚡</div>
+      <h4>Lightweight</h4>
+      <p>~89 MB binary + 1 GB model. Far smaller than Ollama or other frameworks.</p>
+    </div>
+  </div>
+
+  <h3 id="ai-llamacpp">llama.cpp</h3>
+  <p>
+    llama.cpp is a C++ inference engine for LLMs. We chose it over Ollama because it's
+    smaller, faster to start, and easier to keep fully portable.
+  </p>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="ai-start">Start Server</button>
+    <button class="tab-btn" data-tab="ai-chat">Chat</button>
+    <button class="tab-btn" data-tab="ai-stop">Stop Server</button>
+  </div>
+  <div class="tab-panel active" id="ai-start">
+    <pre><button class="copy-btn">copy</button><code>from toolkit.ui import start_llama_cpp
+start_llama_cpp()
+# -> llama.cpp server running at http://localhost:8080</code></pre>
+  </div>
+  <div class="tab-panel" id="ai-chat">
+    <p>In JupyterLab, open the chat panel from the left sidebar. Then type:</p>
+    <pre><button class="copy-btn">copy</button><code>@Jupyternaut What tables are in my database?</code></pre>
+    <p>Or from Python directly:</p>
+    <pre><button class="copy-btn">copy</button><code>import json, urllib.request
+
+payload = json.dumps({
+    "model": "qwen2.5-1.5b-instruct",
+    "messages": [{"role": "user", "content": "Say hi in Persian"}],
+    "max_tokens": 50,
+}).encode()
+
+req = urllib.request.Request(
+    "http://localhost:8080/v1/chat/completions",
+    data=payload,
+    headers={"Content-Type": "application/json"},
+)
+print(json.loads(urllib.request.urlopen(req).read())["choices"][0]["message"]["content"])</code></pre>
+  </div>
+  <div class="tab-panel" id="ai-stop">
+    <pre><button class="copy-btn">copy</button><code>from toolkit.ui import stop_llama_cpp
+stop_llama_cpp()</code></pre>
+  </div>
+
+  <h3 id="ai-models">Available Models</h3>
+  <p>Switch models anytime with <code>change_ai_model()</code>. The model is downloaded automatically.</p>
+  <table>
+    <thead><tr><th>Name</th><th>Size</th><th>RAM</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>tinyllama-1.1b</code></td><td>0.7 GB</td><td>2 GB</td><td>Ultra-light, works everywhere</td></tr>
+      <tr><td><code>qwen2.5-1.5b</code></td><td>1.0 GB</td><td>3 GB</td><td><span class="pill pill-success">default</span> Fast, good quality</td></tr>
+      <tr><td><code>qwen2.5-3b</code></td><td>2.0 GB</td><td>6 GB</td><td>Better quality</td></tr>
+      <tr><td><code>qwen2.5-7b</code></td><td>4.5 GB</td><td>12 GB</td><td>Best quality on CPU</td></tr>
+      <tr><td><code>qwen2.5-coder-1.5b</code></td><td>1.0 GB</td><td>3 GB</td><td>Optimized for code</td></tr>
+      <tr><td><code>qwen2.5-coder-7b</code></td><td>4.5 GB</td><td>12 GB</td><td>Best for code</td></tr>
+    </tbody>
+  </table>
+
+  <pre><button class="copy-btn">copy</button><code>from toolkit.maintenance import list_ai_models, change_ai_model
+
+list_ai_models()                 # see options
+change_ai_model("qwen2.5-7b")    # switch (auto-downloads)
+
+# Restart server to apply
+from toolkit.ui import stop_llama_cpp, start_llama_cpp
+stop_llama_cpp()
+start_llama_cpp()</code></pre>
+
+  <h3 id="ai-mcp">MCP Server</h3>
+  <p>
+    The Model Context Protocol server gives the AI read-only access to your DuckDB
+    and exposes business context as resources. The AI can call these tools:
+  </p>
+  <table>
+    <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>query(sql)</code></td><td>Run a read-only SELECT query</td></tr>
+      <tr><td><code>list_tables()</code></td><td>List all tables in the database</td></tr>
+      <tr><td><code>describe(table)</code></td><td>Get column names and types</td></tr>
+      <tr><td><code>business_context()</code></td><td>Return your business rules (Markdown)</td></tr>
+      <tr><td><code>environment_manifest()</code></td><td>Installed packages and extensions</td></tr>
+      <tr><td><code>capabilities()</code></td><td>What the AI can do in this environment</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="ai-business">Business Context</h3>
+  <p>
+    Edit <code>mcp/context/business.md</code> to teach the AI about your data.
+    No restart needed — the MCP server reads it on every request.
+  </p>
+  <pre><button class="copy-btn">copy</button><code># Business Context
+
+## Tables
+### sales
+- sale_date: transaction date (Gregorian)
+- amount: total in IRR
+- status: 'active', 'cancelled', 'refund'
+
+## Rules
+- Only status = 'active' counts toward revenue
+- Amounts already include VAT
+
+## Common Metrics
+- Revenue = SUM(amount) WHERE status = 'active'</code></pre>
+</section>
+
+<!-- ============ ADVANCED ============ -->
+<section class="doc-section" id="advanced-rag">
+  <h2>Retrieval-Augmented Generation (RAG) <a href="#advanced-rag" class="anchor">#</a></h2>
+  <p>
+    RAG lets you give the AI access to your own documents: PDFs, Markdown, business rules,
+    SQL schema notes, anything in text form. The AI searches these documents before answering.
+  </p>
+
+  <div class="callout info">
+    <div class="ico">ℹ</div>
+    <div class="body">
+      <strong>How it works</strong>
+      Documents are split into chunks, embedded with sentence-transformers, and stored
+      in DuckDB with a vector index. Search uses cosine similarity.
+    </div>
+  </div>
+
+  <h3>Step 1 — Prepare documents</h3>
+  <p>Put your files in <code>data/docs/</code>:</p>
+  <pre><button class="copy-btn">copy</button><code>data/docs/
+├── business_rules.md
+├── schema_notes.md
+└── policies/
+    ├── returns.md
+    └── refunds.md</code></pre>
+
+  <h3>Step 2 — Build the index</h3>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.rag import create_index
+
+create_index(
+    docs_dir="data/docs",
+    table_name="knowledge",
+    db_path="runtime/rag.duckdb",
+)
+# First run downloads the embedding model (~90 MB)</code></pre>
+
+  <h3>Step 3 — Search</h3>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.rag import search
+
+results = search("What is our refund policy?", table_name="knowledge", k=5)
+for r in results:
+    print(f"[{r['score']:.3f}] {r['source']}")
+    print(r["text"][:200])
+    print("---")</code></pre>
+
+  <h3>Step 4 — Feed to the AI</h3>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.rag import build_prompt
+
+prompt = build_prompt("What is our refund policy?", table_name="knowledge")
+print(prompt)
+# Copy the result into Jupyter AI chat</code></pre>
+
+  <h3 id="advanced-whisper">Whisper (Speech-to-Text)</h3>
+  <p>
+    Convert audio files to text locally. Supports 99 languages including Persian.
+    Works fully offline after the model download.
+  </p>
+
+  <pre><button class="copy-btn">copy</button><code>from toolkit.transcribe import transcribe_to_text, transcribe_to_srt
+
+# Plain text
+text = transcribe_to_text("audio/meeting.mp3", model="small", language="fa")
+print(text)
+
+# With timestamps
+from toolkit.transcribe import transcribe_segments
+for seg in transcribe_segments("audio/meeting.mp3", language="fa"):
+    print(f"[{seg['start']:.1f}s - {seg['end']:.1f}s] {seg['text']}")
+
+# Save as SRT subtitle file
+transcribe_to_srt("audio/meeting.mp3", "exports/meeting.srt", language="fa")</code></pre>
+
+  <table>
+    <thead><tr><th>Model</th><th>Size</th><th>Persian Quality</th><th>Speed on CPU</th></tr></thead>
+    <tbody>
+      <tr><td>tiny</td><td>75 MB</td><td>low</td><td>very fast</td></tr>
+      <tr><td>base</td><td>142 MB</td><td>ok</td><td>fast</td></tr>
+      <tr><td><strong>small</strong></td><td>466 MB</td><td><strong>good</strong></td><td>medium</td></tr>
+      <tr><td>medium</td><td>1.5 GB</td><td>very good</td><td>slow</td></tr>
+      <tr><td>large</td><td>3 GB</td><td>best</td><td>very slow</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="advanced-offline">Offline Installation</h3>
+  <p>
+    Install new packages or extensions on a machine without internet by downloading
+    them on another machine first.
+  </p>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="off-py">Python Package</button>
+    <button class="tab-btn" data-tab="off-ext">DuckDB Extension</button>
+  </div>
+  <div class="tab-panel active" id="off-py">
+    <p><strong>On the internet-connected machine:</strong></p>
+    <pre><button class="copy-btn">copy</button><code>from toolkit.maintenance import download_python_package
+download_python_package("statsmodels")
+# Saves wheels to offline/wheels/</code></pre>
+    <p>Copy the <code>offline/wheels/</code> folder to the offline machine.</p>
+    <p><strong>On the offline machine:</strong></p>
+    <pre><button class="copy-btn">copy</button><code>from toolkit.maintenance import install_python_package_offline
+install_python_package_offline("statsmodels")</code></pre>
+  </div>
+  <div class="tab-panel" id="off-ext">
+    <p><strong>On the internet-connected machine:</strong></p>
+    <pre><button class="copy-btn">copy</button><code>from toolkit.maintenance import download_duckdb_extension
+download_duckdb_extension("httpfs")
+# Saves to offline/extensions/httpfs.duckdb_extension</code></pre>
+    <p>Copy the <code>.duckdb_extension</code> file to:</p>
+    <pre><button class="copy-btn">copy</button><code>runtime/duckdb/extensions/v1.5.5/windows_amd64/</code></pre>
+  </div>
+
+  <h3 id="advanced-gpu">GPU Acceleration</h3>
+  <p>llama.cpp can use your GPU for much faster inference.</p>
+
+  <h4>NVIDIA (CUDA)</h4>
+  <ol>
+    <li>Install the NVIDIA driver from <a href="https://nvidia.com/drivers">nvidia.com/drivers</a></li>
+    <li>Install CUDA Toolkit 12.x</li>
+    <li>Edit <code>config.yaml</code>:</li>
+  </ol>
+  <pre><button class="copy-btn">copy</button><code>ai:
+  server:
+    n_gpu_layers: 999    # 0 = CPU, 999 = all layers on GPU</code></pre>
+  <p>Then restart the server.</p>
+
+  <h4>AMD (ROCm)</h4>
+  <p>Install ROCm 5.6+ and set <code>n_gpu_layers: 999</code>.</p>
+
+  <h4>Apple Silicon</h4>
+  <p>Works out of the box — Metal is enabled automatically.</p>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="doc-section" id="faq">
+  <h2>Frequently Asked Questions <a href="#faq" class="anchor">#</a></h2>
+
+  <h4>Does this work without internet?</h4>
+  <p>
+    Yes. After the initial <code>setup.py</code> run, everything works offline. You can
+    download additional packages and models manually if needed.
+  </p>
+
+  <h4>Do I need Python installed on my system?</h4>
+  <p>
+    Only to run <code>setup.py</code> itself (Python 3.9+). After that, everything uses
+    the portable Python inside the project folder.
+  </p>
+
+  <h4>Can I move the project folder to another location?</h4>
+  <p>
+    Yes. All paths are relative. Move the folder anywhere — even to another drive or
+    operating system — and everything still works.
+  </p>
+
+  <h4>How do I add a new Python package?</h4>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.maintenance import install_python_package
+install_python_package("statsmodels")</code></pre>
+
+  <h4>How do I add a new DuckDB extension?</h4>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.maintenance import install_duckdb_extension
+install_duckdb_extension("spatial")
+install_duckdb_extension("qvd", community=True)</code></pre>
+
+  <h4>How do I change the AI model?</h4>
+  <pre><button class="copy-btn">copy</button><code>from toolkit.maintenance import change_ai_model
+change_ai_model("qwen2.5-7b")</code></pre>
+
+  <h4>Can I use this on a server with limited permissions?</h4>
+  <p>
+    Yes. The toolkit never touches system files or requires admin rights. Everything
+    lives inside the project folder.
+  </p>
+
+  <h4>What if I want to use it on Linux?</h4>
+  <p>
+    Works identically. Use the <code>.sh</code> launchers instead of <code>.bat</code>.
+    See <code>docs/INSTALL_LINUX.md</code> for details.
+  </p>
+
+  <h4>How do I uninstall?</h4>
+  <p>Just delete the project folder. Nothing was installed on your system.</p>
+</section>
+
+<!-- ============ TROUBLESHOOTING ============ -->
+<section class="doc-section" id="troubleshooting">
+  <h2>Troubleshooting <a href="#troubleshooting" class="anchor">#</a></h2>
+
+  <h3>"No module named 'toolkit'"</h3>
+  <p>Make sure you selected the correct kernel:</p>
+  <ol>
+    <li>In JupyterLab, click the kernel selector in the top-right</li>
+    <li>Choose <strong>DuckDB Toolkit (portable)</strong></li>
+    <li>Kernel menu → Restart Kernel</li>
+  </ol>
+
+  <h3>"DuckDB extensions: 0 found"</h3>
+  <p>Extensions are stored under a version-specific folder. Run:</p>
+  <pre><button class="copy-btn">copy</button><code>python setup.py</code></pre>
+  <p>Then re-run <code>python verify.py</code>.</p>
+
+  <h3>Port already in use</h3>
+  <p>Jupyter uses port 8888 by default. If it's taken:</p>
+  <pre><button class="copy-btn">copy</button><code>runtime\python\python.exe -m jupyterlab --port 8889</code></pre>
+
+  <h3>Browser doesn't open automatically</h3>
+  <p>Copy the URL from the terminal and paste it in your browser. Make sure to include the token.</p>
+
+  <h3>AI server won't start</h3>
+  <ol>
+    <li>Check if port 8080 is free</li>
+    <li>Verify the model exists: <code>runtime/models/qwen2.5-1.5b-instruct-q4_k_m.gguf</code></li>
+    <li>Run <code>python setup.py</code> to redownload</li>
+  </ol>
+
+  <h3>Whisper model download fails</h3>
+  <p>Whisper models are stored in <code>~/.cache/whisper/</code>. To download manually:</p>
+  <pre><button class="copy-btn">copy</button><code>import whisper
+whisper.load_model("small")</code></pre>
+
+  <h3>Extension install fails on Windows</h3>
+  <p>
+    Some community extensions don't have Windows builds yet. The setup continues
+    anyway, and other extensions still work.
+  </p>
+</section>
+
+<!-- ============ LICENSE ============ -->
+<section class="doc-section" id="license">
+  <h2>License <a href="#license" class="anchor">#</a></h2>
+  <p>This project is released under the MIT License.</p>
+  <pre><button class="copy-btn">copy</button><code>MIT License
+
+Copyright (c) 2026 Portable DuckDB Toolkit contributors
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject
+to the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</code></pre>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <p>
+    Portable DuckDB Toolkit · MIT License ·
+    Built with care for analysts and data engineers.
+  </p>
+</footer>
+
+<script>
+// ========== THEME ==========
+const html = document.documentElement;
+const themeBtn = document.getElementById('themeBtn');
+const themeIcon = document.getElementById('themeIcon');
+
+function getStoredTheme() {
+  return localStorage.getItem('theme') || 'light';
+}
+function setTheme(t) {
+  html.setAttribute('data-theme', t);
+  localStorage.setItem('theme', t);
+  themeIcon.innerHTML = t === 'dark'
+    ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>'
+    : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+}
+setTheme(getStoredTheme());
+themeBtn.addEventListener('click', () => {
+  setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+// ========== SIDEBAR TOGGLE (mobile) ==========
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+document.querySelectorAll('.sidebar a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 720) {
+      document.getElementById('sidebar').classList.remove('open');
+    }
+  });
+});
+
+// ========== ACTIVE NAV LINK ==========
+const sections = document.querySelectorAll('section.doc-section, .hero');
+const navLinks = document.querySelectorAll('.nav-group a');
+
+function updateActiveLink() {
+  const scrollPos = window.scrollY + 100;
+  let current = '';
+  sections.forEach(s => {
+    if (s.offsetTop <= scrollPos) current = s.id;
+  });
+  navLinks.forEach(a => {
+    const href = a.getAttribute('href').slice(1);
+    a.classList.toggle('active', href === current);
+  });
+}
+window.addEventListener('scroll', updateActiveLink);
+window.addEventListener('load', updateActiveLink);
+
+// ========== TABS ==========
+document.querySelectorAll('.tabs').forEach(tabs => {
+  const buttons = tabs.querySelectorAll('.tab-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const tabId = btn.getAttribute('data-tab');
+      // Hide all sibling panels
+      let next = tabs.nextElementSibling;
+      while (next && next.classList.contains('tab-panel')) {
+        next.classList.remove('active');
+        if (next.id === tabId) next.classList.add('active');
+        next = next.nextElementSibling;
+      }
+    });
+  });
+});
+
+// ========== COPY BUTTONS ==========
+document.querySelectorAll('pre').forEach(pre => {
+  const btn = pre.querySelector('.copy-btn');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const code = pre.querySelector('code');
+    const text = code ? code.innerText : '';
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.textContent = 'copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'copy';
+        btn.classList.remove('copied');
+      }, 1500);
+    } catch (e) {
+      btn.textContent = 'failed';
+    }
+  });
+});
+
+// ========== SEARCH ==========
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+
+// Collect searchable content
+const searchIndex = [];
+document.querySelectorAll('section.doc-section').forEach(section => {
+  const title = section.querySelector('h2')?.innerText.replace('#', '').trim() || '';
+  if (!title) return;
+
+  // Add section itself
+  searchIndex.push({
+    title,
+    id: section.id,
+    context: 'Section',
+    text: section.innerText.toLowerCase(),
+  });
+
+  // Add subsections
+  section.querySelectorAll('h3, h4').forEach(heading => {
+    const subTitle = heading.innerText.trim();
+    if (!subTitle) return;
+    // Find nearest id or use parent's
+    let id = heading.id;
+    if (!id) {
+      // Generate an id on the fly
+      id = 'sub-' + subTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      heading.id = id;
+    }
+    searchIndex.push({
+      title: subTitle,
+      id,
+      context: title,
+      text: heading.nextElementSibling?.innerText?.toLowerCase() || '',
+    });
+  });
+});
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if (!q) {
+    searchResults.classList.remove('show');
+    return;
+  }
+  const matches = searchIndex
+    .filter(item =>
+      item.title.toLowerCase().includes(q) ||
+      item.text.includes(q))
+    .slice(0, 12);
+
+  if (matches.length === 0) {
+    searchResults.innerHTML = '<div class="empty">No results found</div>';
+  } else {
+    searchResults.innerHTML = matches.map(m => `
+      <a href="#${m.id}" onclick="searchResults.classList.remove('show');searchInput.value='';">
+        ${m.title}
+        <small>${m.context}</small>
+      </a>
+    `).join('');
+  }
+  searchResults.classList.add('show');
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap')) {
+    searchResults.classList.remove('show');
+  }
+});
+
+// ========== KEYBOARD SHORTCUTS ==========
+document.addEventListener('keydown', e => {
+  // Ctrl/Cmd + K: focus search
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  }
+  // Escape: close search
+  if (e.key === 'Escape') {
+    searchResults.classList.remove('show');
+    searchInput.blur();
+  }
+});
+
+// ========== SCROLL PROGRESS ==========
+const progressBar = document.getElementById('progressBar');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  progressBar.style.width = pct + '%';
+});
+</script>
+</body>
+</html>
