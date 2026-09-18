@@ -36,3 +36,7 @@ configs/paths.json
 # OS noise
 .DS_Store
 Thumbs.db
+.env
+
+# Ignore secrets in '.env'
+.env
