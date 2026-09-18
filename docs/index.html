@@ -180,7 +180,6 @@ header.topbar {
   border-color: var(--accent);
 }
 
-.menu-btn { display: none; }
 
 /* ========== SIDEBAR ========== */
 aside.sidebar {
@@ -787,13 +786,8 @@ footer {
   .toc ul { columns: 1; }
 }
 @media (max-width: 720px) {
-  aside.sidebar {
-    transform: translateX(-100%);
-    box-shadow: var(--shadow-lg);
-  }
-  aside.sidebar.open { transform: translateX(0); }
+  aside.sidebar { display: none; }
   main.content, footer { margin-left: 0; }
-  .menu-btn { display: flex; }
   .topbar .brand-text small { display: none; }
   .topbar .search-wrap { width: 180px; }
   .hero h1 { font-size: 28px; }
@@ -819,6 +813,17 @@ footer {
   z-index: 200;
   transition: width 0.1s;
 }
+
+/* GitHub link button */
+.github-btn {
+  text-decoration: none;
+}
+.github-btn:hover {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+  transform: translateY(-1px);
+}
 </style>
 </head>
 <body>
@@ -826,14 +831,6 @@ footer {
 <div class="progress-bar" id="progressBar"></div>
 
 <header class="topbar">
-  <button class="icon-btn menu-btn" onclick="toggleSidebar()" aria-label="Menu">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <line x1="3" y1="6" x2="21" y2="6"/>
-      <line x1="3" y1="12" x2="21" y2="12"/>
-      <line x1="3" y1="18" x2="21" y2="18"/>
-    </svg>
-  </button>
-
   <a href="#overview" class="brand">
     <div class="brand-logo">D</div>
     <div class="brand-text">
@@ -852,6 +849,13 @@ footer {
   </div>
 
   <div class="actions">
+    <a class="icon-btn github-btn" href="https://github.com/craftsman-coder/duckdb-portable-toolkit"
+       target="_blank" rel="noopener" aria-label="View on GitHub"
+       title="View source on GitHub">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+      </svg>
+    </a>
     <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">
       <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -1136,6 +1140,7 @@ start_duck_ui()
 │
 ├── examples/                   # 21 example notebooks
 ├── dashboards/                 # 7 Streamlit apps
+├── notebooks/                  # Your own Jupyter notebooks
 ├── jobs/                       # Scheduled job scripts
 ├── mcp/                        # MCP server for AI
 │   ├── server.py
@@ -2035,35 +2040,104 @@ themeBtn.addEventListener('click', () => {
   setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
 });
 
-// ========== SIDEBAR TOGGLE (mobile) ==========
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
+// ========== ACTIVE NAV LINK ==========
+const navLinks = Array.from(document.querySelectorAll('.nav-group a'));
+const linkMap = new Map();
+
+// Map section id -> link element
+navLinks.forEach(a => {
+  const href = a.getAttribute('href') || '';
+  if (href.startsWith('#')) {
+    linkMap.set(href.slice(1), a);
+  }
+});
+
+function setActive(id) {
+  navLinks.forEach(a => a.classList.remove('active'));
+  const link = linkMap.get(id);
+  if (link) {
+    link.classList.add('active');
+    // Ensure the active link is visible in the sidebar
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+      const linkRect = link.getBoundingClientRect();
+      const sidebarRect = sidebar.getBoundingClientRect();
+      if (linkRect.top < sidebarRect.top || linkRect.bottom > sidebarRect.bottom) {
+        link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+  }
 }
-document.querySelectorAll('.sidebar a').forEach(a => {
+
+// Click handler: set active immediately for instant feedback
+navLinks.forEach(a => {
   a.addEventListener('click', () => {
-    if (window.innerWidth <= 720) {
-      document.getElementById('sidebar').classList.remove('open');
+    const href = a.getAttribute('href') || '';
+    if (href.startsWith('#')) {
+      setActive(href.slice(1));
     }
   });
 });
 
-// ========== ACTIVE NAV LINK ==========
-const sections = document.querySelectorAll('section.doc-section, .hero');
-const navLinks = document.querySelectorAll('.nav-group a');
+// Scroll spy using IntersectionObserver
+const allSections = document.querySelectorAll('section.doc-section, .hero');
 
-function updateActiveLink() {
-  const scrollPos = window.scrollY + 100;
-  let current = '';
-  sections.forEach(s => {
-    if (s.offsetTop <= scrollPos) current = s.id;
-  });
-  navLinks.forEach(a => {
-    const href = a.getAttribute('href').slice(1);
-    a.classList.toggle('active', href === current);
+if ('IntersectionObserver' in window && allSections.length > 0) {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      // Find the entry closest to the top of the viewport
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+      if (visible.length > 0) {
+        setActive(visible[0].target.id);
+      }
+    },
+    {
+      // Adjust rootMargin so activation happens when section is near top
+      rootMargin: '-20% 0px -70% 0px',
+      threshold: 0,
+    }
+  );
+
+  allSections.forEach(s => observer.observe(s));
+} else {
+  // Fallback for old browsers: scroll position based
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const scrollPos = window.scrollY + 100;
+        let current = '';
+        allSections.forEach(s => {
+          if (s.offsetTop <= scrollPos) current = s.id;
+        });
+        if (current) setActive(current);
+        ticking = false;
+      });
+      ticking = true;
+    }
   });
 }
-window.addEventListener('scroll', updateActiveLink);
-window.addEventListener('load', updateActiveLink);
+
+// Set initial active link on load
+window.addEventListener('load', () => {
+  const hash = window.location.hash.slice(1);
+  if (hash && linkMap.has(hash)) {
+    setActive(hash);
+  } else if (allSections.length > 0) {
+    setActive(allSections[0].id);
+  }
+});
+
+// Handle hash changes (back/forward buttons)
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.slice(1);
+  if (hash && linkMap.has(hash)) {
+    setActive(hash);
+  }
+});
 
 // ========== TABS ==========
 document.querySelectorAll('.tabs').forEach(tabs => {
@@ -2073,7 +2147,6 @@ document.querySelectorAll('.tabs').forEach(tabs => {
       buttons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const tabId = btn.getAttribute('data-tab');
-      // Hide all sibling panels
       let next = tabs.nextElementSibling;
       while (next && next.classList.contains('tab-panel')) {
         next.classList.remove('active');
@@ -2109,13 +2182,11 @@ document.querySelectorAll('pre').forEach(pre => {
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 
-// Collect searchable content
 const searchIndex = [];
 document.querySelectorAll('section.doc-section').forEach(section => {
   const title = section.querySelector('h2')?.innerText.replace('#', '').trim() || '';
   if (!title) return;
 
-  // Add section itself
   searchIndex.push({
     title,
     id: section.id,
@@ -2123,14 +2194,11 @@ document.querySelectorAll('section.doc-section').forEach(section => {
     text: section.innerText.toLowerCase(),
   });
 
-  // Add subsections
   section.querySelectorAll('h3, h4').forEach(heading => {
     const subTitle = heading.innerText.trim();
     if (!subTitle) return;
-    // Find nearest id or use parent's
     let id = heading.id;
     if (!id) {
-      // Generate an id on the fly
       id = 'sub-' + subTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       heading.id = id;
     }
@@ -2176,13 +2244,11 @@ document.addEventListener('click', e => {
 
 // ========== KEYBOARD SHORTCUTS ==========
 document.addEventListener('keydown', e => {
-  // Ctrl/Cmd + K: focus search
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
     e.preventDefault();
     searchInput.focus();
     searchInput.select();
   }
-  // Escape: close search
   if (e.key === 'Escape') {
     searchResults.classList.remove('show');
     searchInput.blur();

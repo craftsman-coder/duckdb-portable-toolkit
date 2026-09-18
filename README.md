@@ -198,7 +198,7 @@ install_duckdb_extension("qvd", community=True)
 
 ```python
 from toolkit.maintenance import change_ai_model
-change_ai_model("qwen3:8b")
+change_ai_model("qwen2.5-7b")
 ```
 
 Then pull the model:
@@ -323,26 +323,32 @@ show_capabilities_tips()
 Start it:
 
 ```python
+from toolkit.ui import start_llama_cpp
+start_llama_cpp()
+# -> http://localhost:8080
 ```
 
 Then open the chat panel in JupyterLab.
 
 To switch to a bigger model, see `docs/AI_MODELS.md`. It covers:
 
-- Recommended models (`qwen3:8b`, `qwen3:14b`, ...)
+- Recommended models (`qwen2.5-3b`, `qwen2.5-7b`, `qwen2.5-coder-7b`)
 - Enabling GPU acceleration (NVIDIA CUDA, AMD ROCm, Apple Metal)
-- Using **vLLM** for high-throughput serving
+- Performance tuning for CPU inference
 
 Quick change:
 
 ```python
 from toolkit.maintenance import change_ai_model
-change_ai_model("qwen3:8b")
+change_ai_model("qwen2.5-7b")
 ```
 
-Then in the terminal:
+Then restart the server to apply the change:
 
-```bash
+```python
+from toolkit.ui import stop_llama_cpp, start_llama_cpp
+stop_llama_cpp()
+start_llama_cpp()
 ```
 
 ---
