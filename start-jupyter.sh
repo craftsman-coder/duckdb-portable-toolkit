@@ -9,22 +9,27 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# --- Find the venv's jupyter-lab executable ---
-JUPYTER=""
-if [ -x "$SCRIPT_DIR/runtime/venv/Scripts/jupyter-lab.exe" ]; then
-    # Windows venv
-    JUPYTER="$SCRIPT_DIR/runtime/venv/Scripts/jupyter-lab.exe"
-elif [ -x "$SCRIPT_DIR/runtime/venv/bin/jupyter-lab" ]; then
-    # Linux / macOS venv
-    JUPYTER="$SCRIPT_DIR/runtime/venv/bin/jupyter-lab"
+# Cache tiktoken files locally so Jupyter AI works offline
+export TIKTOKEN_CACHE_DIR="$SCRIPT_DIR/runtime/tiktoken_cache"
+export JUPYTER_CONFIG_DIR="$SCRIPT_DIR/runtime/jupyter_config"
+
+# Find the portable Python
+PY=""
+if [ -x "$SCRIPT_DIR/runtime/python/python.exe" ]; then
+    PY="$SCRIPT_DIR/runtime/python/python.exe"
+elif [ -x "$SCRIPT_DIR/runtime/python/bin/python3" ]; then
+    PY="$SCRIPT_DIR/runtime/python/bin/python3"
+elif [ -x "$SCRIPT_DIR/runtime/python/bin/python" ]; then
+    PY="$SCRIPT_DIR/runtime/python/bin/python"
 fi
 
-if [ -z "$JUPYTER" ]; then
+if [ -z "$PY" ]; then
     echo
-    echo "  [ERROR] JupyterLab not found."
+    echo "  [ERROR] Portable Python not found."
     echo "  Checked:"
-    echo "    $SCRIPT_DIR/runtime/venv/Scripts/jupyter-lab.exe"
-    echo "    $SCRIPT_DIR/runtime/venv/bin/jupyter-lab"
+    echo "    runtime/python/python.exe"
+    echo "    runtime/python/bin/python3"
+    echo "    runtime/python/bin/python"
     echo
     echo "  Run setup first:"
     echo "    python setup.py"
@@ -40,4 +45,4 @@ echo
 echo "  To stop: press Ctrl+C twice."
 echo
 
-exec "$JUPYTER"
+exec "$PY" -m jupyterlab

@@ -5,12 +5,16 @@ REM ============================================================
 
 cd /d "%~dp0"
 
-set "VENV=%~dp0runtime\venv\Scripts"
+REM Cache tiktoken files locally so Jupyter AI works offline
+set "TIKTOKEN_CACHE_DIR=%~dp0runtime\tiktoken_cache"
+set "JUPYTER_CONFIG_DIR=%~dp0runtime\jupyter_config"
 
-if not exist "%VENV%\jupyter-lab.exe" (
+set "PY=%~dp0runtime\python\python.exe"
+
+if not exist "%PY%" (
     echo.
-    echo   [ERROR] JupyterLab not found.
-    echo   Expected at: %VENV%\jupyter-lab.exe
+    echo   [ERROR] Portable Python not found at:
+    echo     %PY%
     echo.
     echo   Run setup first:
     echo     python setup.py
@@ -26,6 +30,6 @@ echo.
 echo   To stop: press Ctrl+C twice in this window.
 echo.
 
-"%VENV%\jupyter-lab.exe"
+"%PY%" -m jupyterlab
 
 pause
