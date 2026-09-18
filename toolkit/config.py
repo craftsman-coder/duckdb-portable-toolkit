@@ -1,4 +1,4 @@
-"""Runtime config loader for the Portable DuckDB Toolkit."""
+"""Runtime config loader for the DuckDB Toolkit."""
 
 from __future__ import annotations
 

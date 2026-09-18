@@ -1,1 +1,1 @@
-"""Streamlit dashboards for the Portable DuckDB Toolkit."""
+"""Streamlit dashboards for the DuckDB Toolkit."""

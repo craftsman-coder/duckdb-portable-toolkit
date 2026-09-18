@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MCP server for the Portable DuckDB Toolkit.
+MCP server for the DuckDB Toolkit.
 
 Exposes to the AI:
   - read-only SQL on DuckDB

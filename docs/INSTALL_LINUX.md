@@ -1,6 +1,6 @@
 # Linux Installation Guide
 
-This guide covers installation of the Portable DuckDB Toolkit on
+This guide covers installation of the DuckDB Toolkit on
 Linux (Ubuntu, Debian, Fedora, Arch, and derivatives).
 
 ## Prerequisites
@@ -170,7 +170,7 @@ Create `/etc/systemd/system/duckdb-toolkit.service`:
 
 ```ini
 [Unit]
-Description=Portable DuckDB Toolkit - JupyterLab
+Description=DuckDB Toolkit - JupyterLab
 After=network.target
 
 [Service]

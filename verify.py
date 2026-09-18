@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify that the Portable DuckDB Toolkit is fully installed."""
+"""Verify that the DuckDB Toolkit is fully installed."""
 
 from __future__ import annotations
 
@@ -300,7 +300,7 @@ def _c_extensions():
 # ==================================================================
 def main():
     print()
-    heading("Portable DuckDB Toolkit - Verification")
+    heading("DuckDB Toolkit - Verification")
 
     passed = 0
     failed = []

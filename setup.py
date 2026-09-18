@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Portable DuckDB Toolkit - Setup
+DuckDB Toolkit - Setup
 
 Installs a fully portable Python environment inside the project folder.
 No venv, no system modification, no root required.
@@ -157,7 +157,7 @@ def print_banner() -> None:
 """
         print(_c(banner, C.BRIGHT_CYAN))
     else:
-        print("  DuckDB Portable Toolkit")
+        print("  DuckDB Toolkit")
         print()
     print(_c("  A fully portable data + ML environment.", C.DIM))
     print(_c("  Windows, Linux, and macOS. No root needed.", C.DIM))
@@ -1236,7 +1236,7 @@ def write_configs(paths: Paths, cfg: dict) -> None:
 # Main
 # ==================================================================
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Portable DuckDB Toolkit Setup")
+    parser = argparse.ArgumentParser(description="DuckDB Toolkit Setup")
     parser.add_argument("--profile", "-p",
                         choices=["light", "standard", "full", "custom"],
                         help="Skip the prompt and use this profile")
