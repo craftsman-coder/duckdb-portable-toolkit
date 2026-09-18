@@ -25,13 +25,10 @@ import sys
 import tarfile
 import time
 import urllib.request
+import zipfile
 from pathlib import Path
 from typing import Any
 
-
-# ==================================================================
-# Enable ANSI colors on Windows terminals
-# ==================================================================
 if os.name == "nt":
     os.system("")
 
@@ -70,7 +67,7 @@ def _c(text: str, *codes: str) -> str:
 
 
 def step(title: str) -> None:
-    bar = "─" * 64
+    bar = "-" * 64
     print()
     print(_c(bar, C.BRIGHT_CYAN))
     print(_c("  " + title, C.BOLD, C.BRIGHT_CYAN))
@@ -79,19 +76,19 @@ def step(title: str) -> None:
 
 
 def ok(msg: str) -> None:
-    print(f"  {_c('✓', C.BOLD, C.BRIGHT_GREEN)} {msg}")
+    print("  " + _c("OK", C.BOLD, C.BRIGHT_GREEN) + "  " + msg)
 
 
 def warn(msg: str) -> None:
-    print(f"  {_c('!', C.BOLD, C.BRIGHT_YELLOW)} {msg}")
+    print("  " + _c("!!", C.BOLD, C.BRIGHT_YELLOW) + "  " + msg)
 
 
 def err(msg: str) -> None:
-    print(f"  {_c('✗', C.BOLD, C.BRIGHT_RED)} {msg}")
+    print("  " + _c("XX", C.BOLD, C.BRIGHT_RED) + "  " + msg)
 
 
 def info(msg: str) -> None:
-    print(f"  {_c(msg, C.DIM)}")
+    print("  " + _c(msg, C.DIM))
 
 
 def heading(msg: str) -> None:
@@ -101,7 +98,7 @@ def heading(msg: str) -> None:
 
 
 def key_value(key: str, value: str) -> None:
-    print(f"  {_c(f'{key:<18}', C.CYAN)}: {value}")
+    print("  " + _c(f"{key:<18}", C.CYAN) + ": " + str(value))
 
 
 # ==================================================================
@@ -120,9 +117,7 @@ ARCH = {
     "arm64": "aarch64",
 }.get(ARCH_RAW, "x86_64")
 
-# python-build-standalone release used for portable Python
 PY_BUILD_TAG = "20241016"
-PY_VERSION_DEFAULT = "3.12.7"
 
 
 # ==================================================================
@@ -133,7 +128,7 @@ def _ensure_yaml() -> Any:
         import yaml
         return yaml
     except ImportError:
-        warn("PyYAML not found. Installing for the system Python...")
+        warn("PyYAML not found. Installing for system Python...")
         subprocess.run(
             [sys.executable, "-m", "pip", "install", "--user", "pyyaml"],
             check=False,
@@ -173,10 +168,10 @@ def print_banner() -> None:
 # Profile selection
 # ==================================================================
 PROFILE_INFO = [
-    ("1", "light",    "DuckDB + Jupyter",                        "~500 MB"),
-    ("2", "standard", "+ viz + ML + AI + MCP",                   "~3-4 GB"),
-    ("3", "full",     "+ EDA + MLflow + all extensions",         "~10-12 GB"),
-    ("4", "custom",   "Like full, but you edit config first",    "varies"),
+    ("1", "light",    "DuckDB + Jupyter",                     "~500 MB"),
+    ("2", "standard", "+ viz + ML + AI + MCP",                "~3-4 GB"),
+    ("3", "full",     "+ EDA + MLflow + all extensions",      "~10-12 GB"),
+    ("4", "custom",   "Like full, but you edit config first", "varies"),
 ]
 
 
@@ -184,10 +179,10 @@ def show_profile_table() -> None:
     heading("Installation Profiles")
     for opt, name, desc, size in PROFILE_INFO:
         line = (
-            f"    {_c(opt, C.BOLD, C.BRIGHT_CYAN)}"
-            f"  {_c(name, C.BRIGHT_MAGENTA):<24}"
-            f"{desc:<42}"
-            f"{_c(size, C.BRIGHT_GREEN)}"
+            "    " + _c(opt, C.BOLD, C.BRIGHT_CYAN)
+            + "  " + _c(name, C.BRIGHT_MAGENTA).ljust(20)
+            + "  " + desc.ljust(42)
+            + "  " + _c(size, C.BRIGHT_GREEN)
         )
         print(line)
     print()
@@ -196,52 +191,59 @@ def show_profile_table() -> None:
 def prompt_profile_cli() -> str:
     while True:
         print(_c("  Choose 1, 2, 3, or 4", C.BOLD))
-        print(f"     {_c('1', C.BRIGHT_CYAN)} - light")
-        print(f"     {_c('2', C.BRIGHT_CYAN)} - standard   {_c('(recommended)', C.DIM)}")
-        print(f"     {_c('3', C.BRIGHT_CYAN)} - full")
-        print(f"     {_c('4', C.BRIGHT_CYAN)} - custom")
+        print("     " + _c("1", C.BRIGHT_CYAN) + " - light")
+        print("     " + _c("2", C.BRIGHT_CYAN) + " - standard   " + _c("(recommended)", C.DIM))
+        print("     " + _c("3", C.BRIGHT_CYAN) + " - full")
+        print("     " + _c("4", C.BRIGHT_CYAN) + " - custom")
         print()
         try:
             choice = input("  > ").strip() or "2"
         except EOFError:
             choice = "2"
-        if choice in ("1", "light"):    return "light"
-        if choice in ("2", "standard"): return "standard"
-        if choice in ("3", "full"):     return "full"
-        if choice in ("4", "custom"):   return "custom"
-        err(f"Invalid choice: {choice!r}")
+        if choice in ("1", "light"):
+            return "light"
+        if choice in ("2", "standard"):
+            return "standard"
+        if choice in ("3", "full"):
+            return "full"
+        if choice in ("4", "custom"):
+            return "custom"
+        err("Invalid choice: " + repr(choice))
 
 
 def prompt_existing_config() -> str:
     heading("config.yaml already exists")
     key_value("File", str(CONFIG_FILE))
     try:
-        key_value("Size", f"{CONFIG_FILE.stat().st_size} bytes")
+        key_value("Size", str(CONFIG_FILE.stat().st_size) + " bytes")
     except Exception:
         pass
     print()
     print(_c("  What would you like to do?", C.BOLD))
-    print(f"     {_c('K', C.BRIGHT_CYAN)} - keep the existing config and install")
-    print(f"     {_c('O', C.BRIGHT_CYAN)} - overwrite it (choose a new profile)")
-    print(f"     {_c('E', C.BRIGHT_CYAN)} - exit so you can edit it")
+    print("     " + _c("K", C.BRIGHT_CYAN) + " - keep the existing config and install")
+    print("     " + _c("O", C.BRIGHT_CYAN) + " - overwrite it (choose a new profile)")
+    print("     " + _c("E", C.BRIGHT_CYAN) + " - exit so you can edit it")
     print()
     while True:
         try:
             choice = input("  > ").strip().upper() or "K"
         except EOFError:
             choice = "K"
-        if choice in ("K", "KEEP"):       return "keep"
-        if choice in ("O", "OVERWRITE"):  return "overwrite"
-        if choice in ("E", "EDIT"):       return "edit"
-        err(f"Invalid choice: {choice!r}")
+        if choice in ("K", "KEEP"):
+            return "keep"
+        if choice in ("O", "OVERWRITE"):
+            return "overwrite"
+        if choice in ("E", "EDIT"):
+            return "edit"
+        err("Invalid choice: " + repr(choice))
 
 
 def choose_profile(force: str | None = None) -> str:
     if force:
         if force not in ("light", "standard", "full", "custom"):
-            err(f"Unknown profile: {force}")
+            err("Unknown profile: " + force)
             sys.exit(1)
-        ok(f"Using profile from CLI: {force}")
+        ok("Using profile from CLI: " + force)
         return force
 
     if CONFIG_FILE.exists():
@@ -261,20 +263,20 @@ def apply_profile(profile: str) -> None:
     if profile == "keep":
         ok("Using existing config.yaml")
         return
-    src = PROFILES_DIR / f"config.{profile}.yaml"
+    src = PROFILES_DIR / ("config." + profile + ".yaml")
     if not src.exists():
-        err(f"Profile config not found: {src}")
+        err("Profile config not found: " + str(src))
         sys.exit(1)
     shutil.copy2(src, CONFIG_FILE)
-    ok(f"Profile '{profile}' written to config.yaml")
+    ok("Profile '" + profile + "' written to config.yaml")
 
     if profile == "custom":
         print()
         heading("Custom profile - edit your config")
         print(_c("  Next steps:", C.BOLD))
-        print(f"     1. Open {_c(str(CONFIG_FILE), C.BRIGHT_CYAN)}")
-        print(f"     2. Edit paths, packages, AI model, etc.")
-        print(f"     3. Run {_c('python setup.py', C.BRIGHT_GREEN)} again")
+        print("     1. Open " + _c(str(CONFIG_FILE), C.BRIGHT_CYAN))
+        print("     2. Edit paths, packages, AI model, etc.")
+        print("     3. Run " + _c("python setup.py", C.BRIGHT_GREEN) + " again")
         print()
         sys.exit(0)
 
@@ -317,36 +319,45 @@ class Paths:
 
 
 # ==================================================================
-# Path to executables
+# Executable paths
 # ==================================================================
 def python_exe(paths: Paths) -> Path:
     return (paths.python_dir / "python.exe" if OS == "windows"
             else paths.python_dir / "bin" / "python3")
 
 
-def pip_exe(paths: Paths) -> Path:
-    return (paths.python_dir / "Scripts" / "pip.exe" if OS == "windows"
-            else paths.python_dir / "bin" / "pip")
+def site_packages(paths: Paths) -> Path:
+    py = python_exe(paths)
+    if not py.exists():
+        return Path()
+    r = subprocess.run(
+        [str(py), "-c",
+         "import sysconfig; print(sysconfig.get_paths()['purelib'])"],
+        capture_output=True, text=True,
+    )
+    if r.returncode != 0:
+        return Path()
+    return Path(r.stdout.strip())
 
 
 # ==================================================================
 # Download helpers
 # ==================================================================
 def download(url: str, dest: Path, retries: int = 3) -> None:
-    info(f"downloading {url}")
+    info("downloading " + url)
     dest.parent.mkdir(parents=True, exist_ok=True)
     for attempt in range(1, retries + 1):
         try:
             urllib.request.urlretrieve(url, dest)
             size_mb = dest.stat().st_size / 1024 / 1024
-            ok(f"saved {dest.name}  ({size_mb:.1f} MB)")
+            ok("saved " + dest.name + "  (" + format(size_mb, ".1f") + " MB)")
             return
         except Exception as exc:
             if attempt < retries:
-                warn(f"attempt {attempt} failed: {exc}. retrying...")
+                warn("attempt " + str(attempt) + " failed: " + str(exc) + ". retrying...")
                 time.sleep(2 * attempt)
             else:
-                err(f"download failed after {retries} attempts: {exc}")
+                err("download failed after " + str(retries) + " attempts: " + str(exc))
                 raise
 
 
@@ -357,7 +368,6 @@ def extract_tar_gz(archive: Path, target: Path) -> None:
 
 
 def extract_zip(archive: Path, target: Path) -> None:
-    import zipfile
     with zipfile.ZipFile(archive) as z:
         z.extractall(target)
     archive.unlink()
@@ -380,38 +390,36 @@ def create_dirs(paths: Paths) -> None:
         d.mkdir(parents=True, exist_ok=True)
         try:
             rel = d.relative_to(paths.project_root)
+            ok(str(rel))
         except ValueError:
-            rel = d
-        ok(str(rel))
+            ok(str(d))
 
 
 # ==================================================================
-# 2. Portable Python (no venv)
+# 2. Portable Python
 # ==================================================================
 def platform_tag() -> str:
     if OS == "windows":
-        return ("x86_64-pc-windows-msvc" if ARCH == "x86_64"
-                else "aarch64-pc-windows-msvc")
+        return "x86_64-pc-windows-msvc" if ARCH == "x86_64" else "aarch64-pc-windows-msvc"
     if OS == "darwin":
-        return ("x86_64-apple-darwin" if ARCH == "x86_64"
-                else "aarch64-apple-darwin")
-    # linux
-    return f"{ARCH}-unknown-linux-gnu"
+        return "x86_64-apple-darwin" if ARCH == "x86_64" else "aarch64-apple-darwin"
+    return ARCH + "-unknown-linux-gnu"
 
 
 def python_build_url(version: str) -> tuple[str, str]:
     base = ("https://github.com/astral-sh/python-build-standalone/"
-            f"releases/download/{PY_BUILD_TAG}")
-    filename = (f"cpython-{version}+{PY_BUILD_TAG}-"
-                f"{platform_tag()}-install_only.tar.gz")
-    return f"{base}/{filename}", filename
+            "releases/download/" + PY_BUILD_TAG)
+    filename = ("cpython-" + version + "+" + PY_BUILD_TAG + "-"
+                + platform_tag() + "-install_only.tar.gz")
+    return base + "/" + filename, filename
 
 
 def install_portable_python(paths: Paths, cfg: dict) -> None:
-    step(f"Installing portable Python {cfg['python']['version']}")
+    step("Installing portable Python " + cfg["python"]["version"])
 
     if not cfg["setup"].get("download_python", True):
-        warn("skipped by config"); return
+        warn("skipped by config")
+        return
 
     py = python_exe(paths)
     if py.exists() and cfg["setup"].get("skip_existing", True):
@@ -441,11 +449,12 @@ def install_portable_python(paths: Paths, cfg: dict) -> None:
     shutil.rmtree(tmp, ignore_errors=True)
     make_executable(py)
 
-    # On Linux/macOS make sure bin/ executables are executable
     if OS != "windows":
-        for f in (paths.python_dir / "bin").glob("*"):
-            if f.is_file():
-                os.chmod(f, 0o755)
+        bin_dir = paths.python_dir / "bin"
+        if bin_dir.exists():
+            for f in bin_dir.glob("*"):
+                if f.is_file():
+                    os.chmod(f, 0o755)
 
     r = subprocess.run([str(py), "--version"],
                        capture_output=True, text=True)
@@ -462,7 +471,7 @@ PKG_GROUPS = {
     "jupyter": [
         "jupyterlab", "jupysql", "duckdb-engine", "sqlalchemy",
         "ipywidgets", "ipykernel",
-        "jupyter-ai", "jupyter-ai-jupyternaut",
+        "jupyter-ai", "jupyter-ai-jupyternaut", "fastmcp",
     ],
     "visualization": [
         "matplotlib", "seaborn", "plotly", "altair", "bokeh",
@@ -497,8 +506,7 @@ PKG_GROUPS = {
     "utilities": [
         "pyyaml", "requests", "tqdm", "loguru", "rich",
         "humanize", "tabulate", "jinja2", "markdown", "pydantic",
-        "mcp",
-        "openai-whisper",
+        "mcp", "openai-whisper", "certifi",
     ],
 }
 
@@ -515,7 +523,7 @@ def pip_install(py: str, package: str, retries: int = 3) -> bool:
         if r.returncode == 0:
             return True
         if attempt < retries:
-            warn(f"retry {attempt}/{retries} for {package}")
+            warn("retry " + str(attempt) + "/" + str(retries) + " for " + package)
             time.sleep(3 * attempt)
     return False
 
@@ -524,11 +532,11 @@ def install_packages(paths: Paths, cfg: dict) -> None:
     step("Installing Python packages (directly, no venv)")
 
     if not cfg["setup"].get("install_packages", True):
-        warn("skipped by config"); return
+        warn("skipped by config")
+        return
 
     py = str(python_exe(paths))
 
-    # Upgrade pip
     subprocess.run(
         [py, "-m", "pip", "install", "--upgrade",
          "pip", "setuptools", "wheel",
@@ -539,27 +547,26 @@ def install_packages(paths: Paths, cfg: dict) -> None:
     ok("pip, setuptools, wheel upgraded")
 
     enabled = cfg.get("packages", {})
-    failed: list[str] = []
+    failed = []
 
     for group, pkgs in PKG_GROUPS.items():
         if not enabled.get(group, True):
-            info(f"skipping group: {group}")
+            info("skipping group: " + group)
             continue
-        heading(f"group: {group}")
+        heading("group: " + group)
         for pkg in pkgs:
-            info(f"installing {pkg} ...")
+            info("installing " + pkg + " ...")
             if pip_install(py, pkg):
                 ok(pkg)
             else:
-                err(f"{pkg} failed")
+                err(pkg + " failed")
                 failed.append(pkg)
 
-    # PyTorch (special: build-specific index URL)
     if enabled.get("ml", True):
         heading("PyTorch")
         build = cfg.get("pytorch", {}).get("build", "cpu").lower()
         cuda = cfg.get("pytorch", {}).get("cuda_version", "cu121")
-        index = (f"https://download.pytorch.org/whl/{cuda}" if build == "cuda"
+        index = ("https://download.pytorch.org/whl/" + cuda if build == "cuda"
                  else "https://download.pytorch.org/whl/cpu")
         r = subprocess.run(
             [py, "-m", "pip", "install", "torch", "torchvision",
@@ -570,7 +577,7 @@ def install_packages(paths: Paths, cfg: dict) -> None:
             capture_output=True, text=True,
         )
         if r.returncode == 0:
-            ok(f"torch + torchvision ({build})")
+            ok("torch + torchvision (" + build + ")")
         else:
             err("torch install failed")
             failed.extend(["torch", "torchvision"])
@@ -580,7 +587,7 @@ def install_packages(paths: Paths, cfg: dict) -> None:
         for p in failed:
             err(p)
         print()
-        info(f"retry with: {py} -m pip install {' '.join(failed)}")
+        info("retry with: " + py + " -m pip install " + " ".join(failed))
     else:
         ok("all packages installed")
 
@@ -592,13 +599,14 @@ def install_duckdb(paths: Paths, cfg: dict) -> None:
     step("Installing DuckDB CLI")
 
     if not cfg["setup"].get("download_duckdb", True):
-        warn("skipped by config"); return
+        warn("skipped by config")
+        return
 
     exe_name = "duckdb.exe" if OS == "windows" else "duckdb"
     exe_path = paths.duckdb_dir / exe_name
 
     if exe_path.exists() and cfg["setup"].get("skip_existing", True):
-        ok(f"already present: {exe_path.name}")
+        ok("already present: " + exe_path.name)
         return
 
     plat = {
@@ -610,7 +618,7 @@ def install_duckdb(paths: Paths, cfg: dict) -> None:
     }.get((OS, ARCH), "linux-amd64")
 
     url = ("https://github.com/duckdb/duckdb/releases/latest/download/"
-           f"duckdb_cli-{plat}.zip")
+           "duckdb_cli-" + plat + ".zip")
     archive = paths.duckdb_dir / "duckdb.zip"
     download(url, archive)
     extract_zip(archive, paths.duckdb_dir)
@@ -625,7 +633,8 @@ def install_extensions(paths: Paths, cfg: dict) -> None:
     step("Installing DuckDB extensions")
 
     if not cfg["setup"].get("install_extensions", True):
-        warn("skipped by config"); return
+        warn("skipped by config")
+        return
 
     exe = paths.duckdb_dir / ("duckdb.exe" if OS == "windows" else "duckdb")
     if not exe.exists():
@@ -638,40 +647,41 @@ def install_extensions(paths: Paths, cfg: dict) -> None:
 
     for name, repo in todo:
         src = "FROM community" if repo == "community" else ""
-        sql = (f"SET extension_directory='{paths.extensions_dir}'; "
-               f"INSTALL {name} {src};")
+        sql = ("SET extension_directory='" + str(paths.extensions_dir) + "'; "
+               "INSTALL " + name + " " + src + ";")
         r = subprocess.run([str(exe), "-c", sql],
                            capture_output=True, text=True)
         if r.returncode == 0:
-            ok(f"{name}  ({repo})")
+            ok(name + "  (" + repo + ")")
         else:
-            warn(f"{name}  ({repo}) - skipped")
+            warn(name + "  (" + repo + ") - skipped")
     ok("extensions processed")
 
 
 # ==================================================================
-# 6. llama.cpp + model
+# 6. llama.cpp
 # ==================================================================
 def install_llama_cpp(paths: Paths, cfg: dict) -> None:
     step("Setting up llama.cpp")
 
     ai = cfg.get("ai", {})
     if not ai.get("enabled", False):
-        warn("AI assistant disabled in config"); return
+        warn("AI assistant disabled in config")
+        return
     if ai.get("provider") != "llama.cpp":
-        warn("AI provider is not llama.cpp"); return
+        warn("AI provider is not llama.cpp")
+        return
 
     bin_dir = paths.project_root / ai["bin_dir"]
     exe_name = "llama-server.exe" if OS == "windows" else "llama-server"
     server_exe = bin_dir / exe_name
 
     if server_exe.exists() and cfg["setup"].get("skip_existing", True):
-        ok(f"already present: {server_exe.name}")
+        ok("already present: " + server_exe.name)
         return
 
     bin_dir.mkdir(parents=True, exist_ok=True)
 
-    # Choose the right URL per platform
     urls = {
         ("windows", "x86_64"): ai["download_urls"]["windows"],
         ("linux", "x86_64"):   ai["download_urls"]["linux"],
@@ -681,7 +691,7 @@ def install_llama_cpp(paths: Paths, cfg: dict) -> None:
     url = urls.get((OS, ARCH), ai["download_urls"]["linux"])
 
     if not url:
-        warn(f"no llama.cpp URL for {OS}/{ARCH}")
+        warn("no llama.cpp URL for " + OS + "/" + ARCH)
         return
 
     archive = bin_dir / "llama.cpp.zip"
@@ -695,25 +705,30 @@ def install_llama_cpp(paths: Paths, cfg: dict) -> None:
 
     if server_exe.exists():
         ok("llama.cpp installed")
-    else:
-        # maybe the binary is nested in a subfolder
-        for candidate in bin_dir.rglob(exe_name):
-            shutil.move(str(candidate), str(server_exe))
-            make_executable(server_exe)
-            ok("llama.cpp installed (moved from subfolder)")
-            break
-        else:
-            err(f"{exe_name} not found after extraction")
+        return
+
+    for candidate in bin_dir.rglob(exe_name):
+        shutil.move(str(candidate), str(server_exe))
+        make_executable(server_exe)
+        ok("llama.cpp installed (moved from subfolder)")
+        return
+
+    err(exe_name + " not found after extraction")
 
 
+# ==================================================================
+# 7. AI model (GGUF)
+# ==================================================================
 def install_ai_model(paths: Paths, cfg: dict) -> None:
     step("Setting up AI model")
 
     ai = cfg.get("ai", {})
     if not ai.get("enabled", False):
-        warn("AI assistant disabled"); return
+        warn("AI assistant disabled")
+        return
     if ai.get("provider") != "llama.cpp":
-        warn("AI provider is not llama.cpp"); return
+        warn("AI provider is not llama.cpp")
+        return
 
     m = ai["model"]
     model_dir = paths.project_root / m["dir"]
@@ -721,58 +736,302 @@ def install_ai_model(paths: Paths, cfg: dict) -> None:
 
     if model_path.exists() and cfg["setup"].get("skip_existing", True):
         size_gb = model_path.stat().st_size / (1024 ** 3)
-        ok(f"already present: {m['filename']} ({size_gb:.2f} GB)")
+        ok("already present: " + m["filename"] + " (" + format(size_gb, ".2f") + " GB)")
         return
 
     model_dir.mkdir(parents=True, exist_ok=True)
-    info(f"downloading {m['filename']} (~{m.get('size_gb', 1)} GB) ...")
+    info("downloading " + m["filename"] + " (~" + str(m.get("size_gb", 1)) + " GB) ...")
     download(m["download_url"], model_path)
 
 
 # ==================================================================
-# 7. Register toolkit import (relative .pth, no venv)
+# 8. tiktoken cache
+# ==================================================================
+TIKTOKEN_URL = ("https://openaipublic.blob.core.windows.net/"
+                "encodings/cl100k_base.tiktoken")
+
+
+def install_tiktoken_cache(paths: Paths, cfg: dict) -> None:
+    step("Caching tiktoken encodings")
+
+    py = str(python_exe(paths))
+
+    # Ensure certifi
+    r = subprocess.run([py, "-c", "import certifi; print(certifi.where())"],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        info("installing certifi ...")
+        subprocess.run(
+            [py, "-m", "pip", "install", "certifi",
+             "--no-warn-script-location",
+             "--disable-pip-version-check"],
+            capture_output=True, text=True,
+        )
+        r = subprocess.run([py, "-c", "import certifi; print(certifi.where())"],
+                           capture_output=True, text=True)
+
+    if r.returncode == 0:
+        cert = r.stdout.strip()
+        os.environ["SSL_CERT_FILE"] = cert
+        os.environ["REQUESTS_CA_BUNDLE"] = cert
+
+    cache_dir = paths.runtime_dir / "tiktoken_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    target = cache_dir / "cl100k_base.tiktoken"
+    if target.exists():
+        ok("cl100k_base.tiktoken already cached")
+    else:
+        try:
+            info("downloading cl100k_base.tiktoken ...")
+            urllib.request.urlretrieve(TIKTOKEN_URL, str(target))
+            ok("saved cl100k_base.tiktoken")
+        except Exception as exc:
+            warn("could not download: " + str(exc))
+            info("This is only needed if you use Jupyter AI offline.")
+
+    env_file = paths.project_root / ".env"
+    line = "TIKTOKEN_CACHE_DIR=" + cache_dir.as_posix()
+    if env_file.exists():
+        content = env_file.read_text(encoding="utf-8")
+        if "TIKTOKEN_CACHE_DIR" not in content:
+            env_file.write_text(content.rstrip() + "\n" + line + "\n",
+                                encoding="utf-8")
+    else:
+        env_file.write_text(line + "\n", encoding="utf-8")
+
+
+# ==================================================================
+# 9. Patch launchers
+# ==================================================================
+def patch_launchers(paths: Paths) -> None:
+    step("Patching launchers")
+
+    bat = paths.project_root / "start-jupyter.bat"
+    if bat.exists():
+        text = bat.read_text(encoding="utf-8")
+        if "TIKTOKEN_CACHE_DIR" not in text:
+            marker = 'cd /d "%~dp0"\r\n'
+            marker_lf = 'cd /d "%~dp0"\n'
+            nl = "\r\n" if marker in text else "\n"
+            used_marker = marker if marker in text else marker_lf
+            insert = (
+                used_marker
+                + nl
+                + "REM Cache tiktoken files locally" + nl
+                + 'set "TIKTOKEN_CACHE_DIR=%~dp0runtime\\tiktoken_cache"' + nl
+            )
+            if used_marker in text:
+                text = text.replace(used_marker, insert, 1)
+                bat.write_text(text, encoding="utf-8")
+                ok("patched start-jupyter.bat")
+
+    sh = paths.project_root / "start-jupyter.sh"
+    if sh.exists():
+        text = sh.read_text(encoding="utf-8")
+        if "TIKTOKEN_CACHE_DIR" not in text:
+            marker = 'cd "$SCRIPT_DIR"\n'
+            insert = (
+                marker
+                + "\n"
+                + "# Cache tiktoken files locally\n"
+                + 'export TIKTOKEN_CACHE_DIR="$SCRIPT_DIR/runtime/tiktoken_cache"\n'
+            )
+            if marker in text:
+                text = text.replace(marker, insert, 1)
+                sh.write_text(text, encoding="utf-8")
+                ok("patched start-jupyter.sh")
+
+
+# ==================================================================
+# 10. Jupyter config + silence warnings
+# ==================================================================
+JUPYTER_CONFIG = """# Auto-generated by setup.py - silence common warnings
+
+c.ServerApp.websocket_ping_interval = 30000
+c.ServerApp.websocket_ping_timeout = 30000
+c.ServerApp.open_browser = True
+c.ServerApp.allow_remote_access = True
+c.ServerApp.log_level = "WARN"
+"""
+
+
+def write_jupyter_config(paths: Paths, cfg: dict) -> None:
+    step("Writing Jupyter configuration")
+
+    cfg_dir = paths.runtime_dir / "jupyter_config"
+    cfg_dir.mkdir(parents=True, exist_ok=True)
+
+    cfg_file = cfg_dir / "jupyter_server_config.py"
+    cfg_file.write_text(JUPYTER_CONFIG, encoding="utf-8")
+    ok("created runtime/jupyter_config/jupyter_server_config.py")
+
+
+def suppress_litellm_warning(paths: Paths, cfg: dict) -> None:
+    step("Suppressing litellm warning")
+
+    sp = site_packages(paths)
+    if not sp or not sp.exists():
+        warn("site-packages not found")
+        return
+
+    lines = [
+        "import warnings",
+        "warnings.filterwarnings('ignore', "
+        "message=\"Importing 'jupyter_ai_litellm'\")",
+    ]
+    pth = sp / "duckdb_toolkit_warnings.pth"
+    pth.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    ok("created duckdb_toolkit_warnings.pth")
+
+
+def silence_extension_warnings(paths: Paths, cfg: dict) -> None:
+    step("Silencing JupyterLab warnings")
+
+    py = str(python_exe(paths))
+
+    # Disable jupyter_server_mcp (we have our own MCP at mcp/server.py)
+    subprocess.run(
+        [py, "-m", "jupyter", "server", "extension", "disable",
+         "jupyter_server_mcp"],
+        capture_output=True, text=True,
+    )
+    ok("jupyter_server_mcp disabled")
+
+    # Remove jupyterlab-plotly (needs a Node.js build step)
+    subprocess.run(
+        [py, "-m", "pip", "uninstall", "-y", "jupyterlab-plotly"],
+        capture_output=True, text=True,
+    )
+    ok("jupyterlab-plotly removed")
+
+
+def clean_notebooks(paths: Paths, cfg: dict) -> None:
+    step("Cleaning stale notebooks")
+
+    removed = 0
+    cleaned = 0
+
+    for nb in paths.project_root.glob("Untitled*.ipynb"):
+        try:
+            nb.unlink()
+            removed += 1
+            info("removed " + nb.name)
+        except Exception:
+            pass
+
+    for nb in paths.project_root.rglob("*.ipynb"):
+        if ".ipynb_checkpoints" in str(nb):
+            continue
+        try:
+            data = json.loads(nb.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        meta = data.get("metadata", {})
+        if "kernelspec" in meta:
+            name = meta["kernelspec"].get("name", "")
+            if name not in ("duckdb-toolkit", "python3"):
+                meta.pop("kernelspec", None)
+                meta.pop("language_info", None)
+                nb.write_text(
+                    json.dumps(data, indent=1, ensure_ascii=False),
+                    encoding="utf-8",
+                )
+                cleaned += 1
+
+    if removed:
+        ok("removed " + str(removed) + " temporary notebook(s)")
+    if cleaned:
+        ok("cleaned " + str(cleaned) + " notebook(s)")
+    if not removed and not cleaned:
+        ok("no stale notebooks found")
+
+
+def finalize_jupyter_setup(paths: Paths, cfg: dict) -> None:
+    """Run all warning-silencing steps at the end of setup."""
+    write_jupyter_config(paths, cfg)
+    suppress_litellm_warning(paths, cfg)
+    silence_extension_warnings(paths, cfg)
+    clean_notebooks(paths, cfg)
+
+
+# ==================================================================
+# 11. Whisper model
+# ==================================================================
+def install_whisper_model(paths: Paths, cfg: dict) -> None:
+    step("Downloading Whisper model")
+
+    whisper_cfg = cfg.get("whisper", {})
+    if not whisper_cfg.get("enabled", True):
+        warn("Whisper disabled in config")
+        return
+
+    model = whisper_cfg.get("model", "small")
+    size_gb = {"tiny": 0.075, "base": 0.142, "small": 0.466,
+               "medium": 1.5, "large": 3.0}.get(model, 0.466)
+
+    home = Path.home()
+    cache = home / ".cache" / "whisper"
+
+    if cache.exists() and any(cache.glob(model + "*")):
+        ok("Whisper '" + model + "' model already cached")
+        return
+
+    cache.mkdir(parents=True, exist_ok=True)
+
+    py = str(python_exe(paths))
+    info("downloading Whisper '" + model + "' model (~"
+         + format(size_gb, ".2f") + " GB) ...")
+    info("(this happens only once and is cached for offline use)")
+
+    code = (
+        "import whisper;"
+        "whisper.load_model('" + model + "');"
+        "print('ok')"
+    )
+    r = subprocess.run([py, "-c", code],
+                       capture_output=True, text=True, timeout=900)
+    if r.returncode == 0:
+        ok("Whisper '" + model + "' downloaded to " + str(cache))
+    else:
+        warn("Whisper model download failed")
+        if r.stderr:
+            print("       " + r.stderr.strip().splitlines()[-1][:200])
+
+
+# ==================================================================
+# 12. Register toolkit import (.pth)
 # ==================================================================
 def register_toolkit_import(paths: Paths) -> None:
     step("Registering toolkit import path")
 
-    py = python_exe(paths)
-    if not py.exists():
-        warn("Python not installed yet"); return
-
-    r = subprocess.run(
-        [str(py), "-c",
-         "import sysconfig; print(sysconfig.get_paths()['purelib'])"],
-        capture_output=True, text=True,
-    )
-    if r.returncode != 0:
-        warn("could not find site-packages")
+    sp = site_packages(paths)
+    if not sp or not sp.exists():
+        warn("site-packages not found")
         return
 
-    sp = Path(r.stdout.strip())
-    # Compute relative path from site-packages to project root
     try:
         rel = os.path.relpath(paths.project_root, sp).replace("\\", "/")
     except ValueError:
-        # Different drives on Windows
         rel = str(paths.project_root).replace("\\", "/")
 
     pth = sp / "duckdb_toolkit.pth"
     pth.write_text(rel + "\n", encoding="utf-8")
-    ok(f"created {pth.name}")
-    info(f"relative path: {rel}")
+    ok("created " + pth.name)
+    info("relative path: " + rel)
 
 
 # ==================================================================
-# 8. Register Jupyter kernel
+# 13. Register Jupyter kernel
 # ==================================================================
 def register_kernel(paths: Paths) -> None:
     step("Registering Jupyter kernel")
 
     py = python_exe(paths)
     if not py.exists():
-        warn("Python not installed"); return
+        warn("Python not installed")
+        return
 
-    # Ensure ipykernel exists
     r = subprocess.run([str(py), "-c", "import ipykernel"],
                        capture_output=True, text=True)
     if r.returncode != 0:
@@ -796,56 +1055,8 @@ def register_kernel(paths: Paths) -> None:
         warn("kernel registration failed")
 
 
-
 # ==================================================================
-# Whisper model (for Python openai-whisper)
-# ==================================================================
-def install_whisper_model(paths: Paths, cfg: dict) -> None:
-    """Download the Whisper 'small' model for offline use."""
-    step("Downloading Whisper model")
-
-    whisper_cfg = cfg.get("whisper", {})
-    if not whisper_cfg.get("enabled", True):
-        warn("Whisper disabled in config")
-        return
-
-    model = whisper_cfg.get("model", "small")
-    size_gb = {"tiny": 0.075, "base": 0.142, "small": 0.466,
-               "medium": 1.5, "large": 3.0}.get(model, 0.466)
-
-    # Models are stored in the user's home folder (HuggingFace cache)
-    # because openai-whisper uses that path.
-    home = Path.home()
-    cache = home / ".cache" / "whisper"
-
-    if cache.exists() and any(cache.glob(model + "*")):
-        ok(f"Whisper '{model}' model already cached")
-        return
-
-    cache.mkdir(parents=True, exist_ok=True)
-
-    py = str(python_exe(paths))
-    info(f"downloading Whisper '{model}' model (~{size_gb:.2f} GB) ...")
-    info("(this happens only once and is cached for offline use)")
-
-    # Trigger download by loading the model
-    code = (
-        "import whisper;"
-        f"whisper.load_model('{model}');"
-        "print('ok')"
-    )
-    r = subprocess.run([py, "-c", code],
-                       capture_output=True, text=True, timeout=900)
-    if r.returncode == 0:
-        ok(f"Whisper '{model}' downloaded to {cache}")
-    else:
-        warn("Whisper model download failed")
-        if r.stderr:
-            print("       " + r.stderr.strip().splitlines()[-1][:200])
-
-
-# ==================================================================
-# 9. Manifest
+# 14. Manifest
 # ==================================================================
 def generate_manifest(paths: Paths) -> None:
     step("Generating environment manifest")
@@ -862,7 +1073,7 @@ def generate_manifest(paths: Paths) -> None:
 
 
 # ==================================================================
-# 10. Config files
+# 15. Config files
 # ==================================================================
 SECRETS_TEMPLATE = """-- Database secrets - fill in your credentials.
 CREATE SECRET IF NOT EXISTS ora (
@@ -883,7 +1094,8 @@ CREATE SECRET IF NOT EXISTS mysql (
 def write_configs(paths: Paths, cfg: dict) -> None:
     step("Writing configuration files")
     if not cfg["setup"].get("create_config_files", True):
-        warn("skipped by config"); return
+        warn("skipped by config")
+        return
 
     secrets = paths.configs_dir / "secrets.sql"
     if not secrets.exists():
@@ -894,12 +1106,13 @@ def write_configs(paths: Paths, cfg: dict) -> None:
 
     paths_json = paths.configs_dir / "paths.json"
     try:
-        rel_paths = {
-            k: str(Path(v).relative_to(paths.project_root)).replace("\\", "/")
-            if Path(v).is_absolute() and str(v).startswith(str(paths.project_root))
-            else str(v)
-            for k, v in vars(paths).items()
-        }
+        rel_paths = {}
+        for k, v in vars(paths).items():
+            vp = Path(v)
+            if vp.is_absolute() and str(vp).startswith(str(paths.project_root)):
+                rel_paths[k] = str(vp.relative_to(paths.project_root)).replace("\\", "/")
+            else:
+                rel_paths[k] = str(v)
     except Exception:
         rel_paths = {k: str(v) for k, v in vars(paths).items()}
     paths_json.write_text(
@@ -949,17 +1162,19 @@ def main() -> None:
     install_extensions(paths, cfg)
     install_llama_cpp(paths, cfg)
     install_ai_model(paths, cfg)
+    install_tiktoken_cache(paths, cfg)
+    patch_launchers(paths)
+    finalize_jupyter_setup(paths, cfg)
     install_whisper_model(paths, cfg)
     register_toolkit_import(paths)
     register_kernel(paths)
     generate_manifest(paths)
     write_configs(paths, cfg)
 
-    # Success
     print()
-    bar = "═" * 64
+    bar = "=" * 64
     print(_c(bar, C.BOLD, C.BRIGHT_GREEN))
-    print(_c("  ✓ Setup complete!", C.BOLD, C.BRIGHT_GREEN))
+    print(_c("  Setup complete!", C.BOLD, C.BRIGHT_GREEN))
     print(_c(bar, C.BOLD, C.BRIGHT_GREEN))
     print()
 
@@ -969,24 +1184,24 @@ def main() -> None:
     else:
         launch = "./start-jupyter.sh"
 
-    print(f"  {_c('1.', C.BOLD)} Launch JupyterLab:")
-    print(f"     {_c(launch, C.BRIGHT_CYAN)}")
+    print("  " + _c("1.", C.BOLD) + " Launch JupyterLab:")
+    print("     " + _c(launch, C.BRIGHT_CYAN))
     print()
-    print(f"  {_c('2.', C.BOLD)} In JupyterLab, select the kernel:")
-    print(f"     {_c('DuckDB Toolkit (portable)', C.BRIGHT_CYAN)}")
+    print("  " + _c("2.", C.BOLD) + " In JupyterLab, select the kernel:")
+    print("     " + _c("DuckDB Toolkit (portable)", C.BRIGHT_CYAN))
     print()
-    print(f"  {_c('3.', C.BOLD)} Edit your business context for the AI:")
-    print(f"     {_c('mcp/context/business.md', C.BRIGHT_CYAN)}")
+    print("  " + _c("3.", C.BOLD) + " Edit your business context for the AI:")
+    print("     " + _c("mcp/context/business.md", C.BRIGHT_CYAN))
     print()
-    print(f"  {_c('4.', C.BOLD)} Edit database credentials:")
-    print(f"     {_c('configs/secrets.sql', C.BRIGHT_CYAN)}")
+    print("  " + _c("4.", C.BOLD) + " Edit database credentials:")
+    print("     " + _c("configs/secrets.sql", C.BRIGHT_CYAN))
     print()
-    print(f"  {_c('5.', C.BOLD)} Verify installation:")
+    print("  " + _c("5.", C.BOLD) + " Verify installation:")
     if OS == "windows":
         cmd = "runtime\\python\\python.exe verify.py"
     else:
         cmd = "runtime/python/bin/python3 verify.py"
-    print(f"     {_c(cmd, C.BRIGHT_GREEN)}")
+    print("     " + _c(cmd, C.BRIGHT_GREEN))
     print()
 
 
