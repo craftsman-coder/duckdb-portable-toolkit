@@ -4,7 +4,7 @@ A fully portable data + ML environment that runs inside Jupyter and
 Streamlit. Works on **Windows** and **Linux**. After the initial setup,
 everything runs **offline**.
 
-> 🌐 **[View the interactive documentation online →](https://craftsman-coder.github.io/duckdb-portable-toolkit/)**
+> 🌐 **<a href="https://craftsman-coder.github.io/duckdb-portable-toolkit/" target="_blank" rel="noopener">View the interactive documentation online →</a>**
 
 ---
 
