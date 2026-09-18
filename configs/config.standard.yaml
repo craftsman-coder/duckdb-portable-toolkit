@@ -8,7 +8,7 @@ paths:
   python_dir:     "runtime/python"
   duckdb_dir:     "runtime/duckdb"
   extensions_dir: "runtime/duckdb/extensions"
-  models_dir:     "runtime/duckdb/models"
+  models_dir:     "runtime/models"
   jobs_dir:       "jobs"
   configs_dir:    "configs"
   data_dir:       "data"
@@ -54,6 +54,7 @@ extensions:
   community:
     - qvd
     - oracle_scanner
+
 ai:
   enabled: true
   provider: "llama.cpp"
