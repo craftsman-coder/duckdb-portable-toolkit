@@ -145,7 +145,7 @@ duck-ui works fully offline:
 
 1. Start duck-ui
 2. Disconnect from the internet
-3. Open `http://localhost:5522` ; it should still work
+3. Open `http://localhost:5522`; it should still work
 
 ## Persistent storage (optional)
 

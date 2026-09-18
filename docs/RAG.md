@@ -1,7 +1,7 @@
 # Retrieval-Augmented Generation (RAG)
 
 Give your local AI access to your own documents: business rules, PDF
-extracts, markdown notes, CSV headers, SQL schemas ; anything in text
+extracts, markdown notes, CSV headers, SQL schemas; anything in text
 form. The AI will search this library before answering.
 
 Everything runs **offline** after the embedding model is downloaded.
@@ -60,9 +60,9 @@ for r in results:
 
 Each result has:
 
-- `source` ; the file it came from
-- `text` ; the chunk content
-- `score` ; cosine similarity (higher = more relevant)
+- `source`; the file it came from
+- `text`; the chunk content
+- `score`; cosine similarity (higher = more relevant)
 
 ## 4. Feed results to your AI
 

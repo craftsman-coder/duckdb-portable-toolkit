@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DuckDB Portable Toolkit ; Documentation</title>
+<title>DuckDB Portable Toolkit; Documentation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300; 400; 500; 600; 700; 800&family=JetBrains+Mono:wght@400; 500; 600&display=swap" rel="stylesheet">
@@ -959,7 +959,7 @@ footer {
   <p class="lead">
     A complete, self-contained data and AI environment that runs inside Jupyter and Streamlit.
     No system Python, no virtual environment, no admin rights required. Just clone and run.
-    Works on Windows, Linux, and macOS ; move the folder anywhere and everything still works.
+    Works on Windows, Linux, and macOS; move the folder anywhere and everything still works.
   </p>
   <div class="hero-actions">
     <a href="#installation" class="btn btn-primary">
@@ -1736,7 +1736,7 @@ start_llama_cpp()</code></pre>
   <h3 id="ai-business">Business Context</h3>
   <p>
     Edit <code>mcp/context/business.md</code> to teach the AI about your data.
-    No restart needed ; the MCP server reads it on every request.
+    No restart needed; the MCP server reads it on every request.
   </p>
   <pre><button class="copy-btn">copy</button><code># Business Context
 
@@ -1771,7 +1771,7 @@ start_llama_cpp()</code></pre>
     </div>
   </div>
 
-  <h3>Step 1 ; Prepare documents</h3>
+  <h3>Step 1; Prepare documents</h3>
   <p>Put your files in <code>data/docs/</code>:</p>
   <pre><button class="copy-btn">copy</button><code>data/docs/
 ├── business_rules.md
@@ -1780,7 +1780,7 @@ start_llama_cpp()</code></pre>
     ├── returns.md
     └── refunds.md</code></pre>
 
-  <h3>Step 2 ; Build the index</h3>
+  <h3>Step 2; Build the index</h3>
   <pre><button class="copy-btn">copy</button><code>from toolkit.rag import create_index
 
 create_index(
@@ -1790,7 +1790,7 @@ create_index(
 )
 # First run downloads the embedding model (~90 MB)</code></pre>
 
-  <h3>Step 3 ; Search</h3>
+  <h3>Step 3; Search</h3>
   <pre><button class="copy-btn">copy</button><code>from toolkit.rag import search
 
 results = search("What is our refund policy?", table_name="knowledge", k=5)
@@ -1799,7 +1799,7 @@ for r in results:
     print(r["text"][:200])
     print("---")</code></pre>
 
-  <h3>Step 4 ; Feed to the AI</h3>
+  <h3>Step 4; Feed to the AI</h3>
   <pre><button class="copy-btn">copy</button><code>from toolkit.rag import build_prompt
 
 prompt = build_prompt("What is our refund policy?", table_name="knowledge")
@@ -1884,7 +1884,7 @@ download_duckdb_extension("httpfs")
   <p>Install ROCm 5.6+ and set <code>n_gpu_layers: 999</code>.</p>
 
   <h4>Apple Silicon</h4>
-  <p>Works out of the box ; Metal is enabled automatically.</p>
+  <p>Works out of the box; Metal is enabled automatically.</p>
 </section>
 
 <!-- ============ FAQ ============ -->
@@ -1905,8 +1905,8 @@ download_duckdb_extension("httpfs")
 
   <h4>Can I move the project folder to another location?</h4>
   <p>
-    Yes. All paths are relative. Move the folder anywhere ; even to another drive or
-    operating system ; and everything still works.
+    Yes. All paths are relative. Move the folder anywhere; even to another drive or
+    operating system; and everything still works.
   </p>
 
   <h4>How do I add a new Python package?</h4>
