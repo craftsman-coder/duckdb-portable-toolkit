@@ -4,7 +4,7 @@ A fully **portable** data + ML environment that runs inside Jupyter
 and Streamlit. Works on Windows and Linux. After the initial setup,
 everything runs **offline**.
 
-> 🌐 **<a href="https://craftsman-coder.github.io/duckdb-portable-toolkit/" target="_blank" rel="noopener">View the interactive documentation online →</a>**
+> 🌐 **<a href="https://craftsman-coder.github.io/duckdb-toolkit/" target="_blank" rel="noopener">View the interactive documentation online →</a>**
 
 ---
 
@@ -13,8 +13,8 @@ everything runs **offline**.
 ### 1. Clone
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/duckdb-portable-toolkit.git
-cd duckdb-portable-toolkit
+git clone https://github.com/YOUR-USERNAME/duckdb-toolkit.git
+cd duckdb-toolkit
 ```
 
 ### 2. Run setup (needs internet once)
@@ -106,14 +106,14 @@ chmod +x start-jupyter.sh
 Windows (PowerShell or CMD):
 
 ```powershell
-cd C:\projects\duckdb-portable-toolkit
+cd C:\projects\duckdb-toolkit
 runtime\venv\Scripts\jupyter-lab.exe
 ```
 
 Linux / macOS / Git Bash:
 
 ```bash
-cd /path/to/duckdb-portable-toolkit
+cd /path/to/duckdb-toolkit
 runtime/venv/bin/jupyter-lab
 ```
 
@@ -368,7 +368,7 @@ search("my question", table_name="docs")
 ## Directory layout
 
 ```text
-duckdb-portable-toolkit/
+duckdb-toolkit/
 ├── config.yaml
 ├── configs/
 │   ├── config.light.yaml
@@ -441,7 +441,7 @@ Delete the project folder. Nothing was installed on the system.
 
 ## Documentation
 
-- 🌐 **[Interactive HTML guide (live)](https://craftsman-coder.github.io/duckdb-portable-toolkit/)**, open in browser, no download needed
+- 🌐 **[Interactive HTML guide (live)](https://craftsman-coder.github.io/duckdb-toolkit/)**, open in browser, no download needed
 - `docs/INSTALL_LINUX.md` - Linux install
 - `docs/CONNECT_DUCK_UI.md` - Offline DuckDB UI
 - `docs/AI_MODELS.md` - Switch models, enable GPU

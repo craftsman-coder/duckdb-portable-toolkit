@@ -34,7 +34,7 @@ Copy the entire `offline/wheels/` folder (USB, SCP, etc.) into the
 same path on the offline machine:
 
 ```
-duckdb-portable-toolkit/offline/wheels/
+duckdb-toolkit/offline/wheels/
 ```
 
 ### Step 3 - on the offline machine
@@ -67,7 +67,7 @@ This saves the file to `offline/extensions/httpfs.duckdb_extension`.
 Copy the `.duckdb_extension` file into:
 
 ```
-duckdb-portable-toolkit/runtime/duckdb/extensions/<version>/<platform>/
+duckdb-toolkit/runtime/duckdb/extensions/<version>/<platform>/
 ```
 
 ### Step 3 - on the offline machine
@@ -127,7 +127,7 @@ package or extension.
 ## Where the files live
 
 ```
-duckdb-portable-toolkit/
+duckdb-toolkit/
 ├── offline/
 │   ├── wheels/                <- .whl files for Python packages
 │   └── extensions/            <- .duckdb_extension files

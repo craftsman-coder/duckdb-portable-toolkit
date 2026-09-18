@@ -28,7 +28,7 @@ from mcp.types import TextContent, Resource
 
 import duckdb
 
-app = Server("duckdb-portable-toolkit")
+app = Server("duckdb-toolkit")
 
 ROOT = Path(__file__).parent.parent.resolve()
 RUNTIME = ROOT / "runtime"

@@ -138,7 +138,7 @@ chmod +x .git/hooks/post-merge
 Add to `~/.bashrc` (Linux) or `~/.bash_profile`:
 
 ```bash
-alias refresh-manifest='cd ~/duckdb-portable-toolkit && runtime/python/bin/python3 mcp/manifest_generator.py'
+alias refresh-manifest='cd ~/duckdb-toolkit && runtime/python/bin/python3 mcp/manifest_generator.py'
 ```
 
 ### From Python (in a notebook)

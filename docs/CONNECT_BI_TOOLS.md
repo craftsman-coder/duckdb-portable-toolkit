@@ -98,7 +98,7 @@ Power BI connects via **ODBC**.
 Run this as **Administrator** in a Command Prompt:
 
 ```cmd
-cd C:\projects\duckdb-portable-toolkit\runtime\duckdb\drivers
+cd C:\projects\duckdb-toolkit\runtime\duckdb\drivers
 odbc_install.exe
 ```
 
@@ -194,8 +194,8 @@ Output:
   BI Tool Connection Info
 ==================================================================
 
-  DuckDB file: C:\projects\duckdb-portable-toolkit\runtime\my_database.duckdb
-  JDBC driver: C:\projects\duckdb-portable-toolkit\runtime\duckdb\drivers\duckdb_jdbc.jar
+  DuckDB file: C:\projects\duckdb-toolkit\runtime\my_database.duckdb
+  JDBC driver: C:\projects\duckdb-toolkit\runtime\duckdb\drivers\duckdb_jdbc.jar
 
   -- Tableau (JDBC) --------------------------------------------
      Driver path: C:\...\duckdb_jdbc.jar

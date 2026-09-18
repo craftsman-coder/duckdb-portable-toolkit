@@ -42,8 +42,8 @@ python3 --version
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/duckdb-portable-toolkit.git
-cd duckdb-portable-toolkit
+git clone https://github.com/YOUR-USERNAME/duckdb-toolkit.git
+cd duckdb-toolkit
 ```
 
 ### 2. Run the setup script
@@ -176,8 +176,8 @@ After=network.target
 [Service]
 Type=simple
 User=YOUR_USER
-WorkingDirectory=/home/YOUR_USER/duckdb-portable-toolkit
-ExecStart=/home/YOUR_USER/duckdb-portable-toolkit/runtime/python/bin/python3 -m jupyterlab --ip=0.0.0.0 --port=8888 --no-browser
+WorkingDirectory=/home/YOUR_USER/duckdb-toolkit
+ExecStart=/home/YOUR_USER/duckdb-toolkit/runtime/python/bin/python3 -m jupyterlab --ip=0.0.0.0 --port=8888 --no-browser
 Restart=on-failure
 RestartSec=10
 
@@ -236,7 +236,7 @@ Already-installed components are skipped (`skip_existing: true`).
 
 ```bash
 cd ..
-rm -rf duckdb-portable-toolkit
+rm -rf duckdb-toolkit
 ```
 
 ## Next Steps
