@@ -20,7 +20,6 @@ def _rel(p: Path) -> str:
         return str(p)
 
 
-
 # ==================================================================
 # Colored output
 # ==================================================================
@@ -83,8 +82,6 @@ def _c1():
     p = (HERE / "runtime" / "python" /
          ("python.exe" if OS == "windows" else "bin/python3"))
     return p.exists(), _rel(p)
-
-
 
 
 @check("runtime/duckdb CLI exists")
@@ -298,6 +295,41 @@ def _c_extensions():
 # ==================================================================
 # Main
 # ==================================================================
+
+
+@check("Optional clients")
+def _c_optional():
+    """Check which optional client packages are available."""
+    from importlib.metadata import version, PackageNotFoundError
+    import subprocess
+
+    found = []
+    missing = []
+    packages = [
+        ("kafka", "kafka-python"),
+        ("trino", "trino"),
+        ("openai", "openai"),
+        ("litellm", "litellm"),
+    ]
+    for module, pkg in packages:
+        r = _run([str(_py()), "-c", f"import {module}"])
+        if r.returncode == 0:
+            try:
+                v = version(pkg)
+            except PackageNotFoundError:
+                v = "installed"
+            found.append(f"{module} {v}")
+        else:
+            missing.append(module)
+
+    if found:
+        info_str = ", ".join(found)
+        if missing:
+            info_str += " | missing: " + ", ".join(missing)
+        return True, info_str
+    return False, "no optional clients installed"
+
+
 def main():
     print()
     heading("DuckDB Toolkit - Verification")

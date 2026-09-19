@@ -134,7 +134,7 @@ start_streamlit("dashboards/01_orders_dashboard.py")
 
 | Role | What you get |
 |---|---|
-| **Data engineers** | DuckDB for lakehouse workloads, Iceberg / Delta / Lance support, job scheduler, parallel query runner, connectors to Spark / Kafka / Flink / Trino |
+| **Data engineers** | DuckDB for lakehouse workloads, Iceberg / Delta / Lance support, job scheduler, parallel query runner, and a growing set of database connectors (PostgreSQL, MySQL, SQL Server, Oracle, MongoDB, Cassandra) |
 | **BI developers** | 50+ Python packages, Streamlit dashboards, ODBC / JDBC drivers to plug into Tableau / Power BI / Qlik, one-click dashboards |
 | **Dashboard developers** | Streamlit + DuckDB for fast, refreshing dashboards on top of Parquet or live databases |
 | **Context engineers** | Geospatial (GeoPandas + DuckDB spatial), time series, Excel / CSV, QVD for Qlik |
@@ -475,6 +475,170 @@ from toolkit.rag import create_index, search
 create_index("data/docs", table_name="docs")
 search("my question", table_name="docs")
 ```
+
+---
+
+
+## Connectors (Kafka, Flink SQL, Trino)
+
+The toolkit includes lightweight Python clients for common
+data platforms. No Docker, no local cluster, no PySpark needed.
+
+```python
+from toolkit.connections import (
+    kafka_consumer, kafka_producer, kafka_topics,
+    flink_sql_query, flink_jobs,
+    trino_query, trino_catalogs,
+)
+
+# Kafka
+topics = kafka_topics('kafka-broker:9092')
+consumer = kafka_consumer('kafka-broker:9092', topics=['events'])
+for msg in consumer:
+    print(msg.value)
+
+# Flink SQL Gateway
+rows = flink_sql_query(
+    'http://flink-sql-gateway:8083',
+    'SELECT user_id, COUNT(*) FROM kafka_events GROUP BY user_id',
+)
+
+# Trino
+df = trino_query(
+    host='trino-coordinator',
+    sql='SELECT region, COUNT(*) FROM hive.default.sales GROUP BY region',
+    catalog='hive',
+)
+```
+
+| Client | Package | Size |
+|---|---|---|
+| Kafka (light) | `kafka-python` | ~600 KB |
+| Kafka (fast) | `confluent-kafka` | ~5 MB |
+| Trino | `trino` | ~2 MB |
+| Flink SQL Gateway | `py-flink-sql-gateway` | small |
+
+> **Note:** PySpark is not included by default (~300 MB). Install it
+> manually with `runtime/python/python.exe -m pip install pyspark`
+> if you need the full Spark DataFrame API.
+
+See [`docs/DATA_ENGINEERING.md`](docs/DATA_ENGINEERING.md) for details.
+
+---
+
+
+## Online AI models (optional)
+
+In addition to the local llama.cpp model, you can plug in
+an online model from **OpenRouter**, **OpenAI**, **Groq**,
+**Together**, **DeepSeek**, or any OpenAI-compatible endpoint.
+
+1. Get an API key from your provider
+   (e.g. https://openrouter.ai/settings/keys)
+2. Edit `config.yaml`:
+
+```yaml
+online_ai:
+  enabled: true
+  provider: "openrouter"
+  model: "openai/gpt-4o-mini"
+  api_key: "sk-or-v1-..."
+  base_url: "https://openrouter.ai/api/v1"
+```
+
+3. Call it from Python:
+
+```python
+from toolkit.online_ai import chat, list_providers
+
+print(list_providers())                 # built-in presets
+print(chat("Explain DuckDB in one line"))
+```
+
+The same model is available inside the MCP server as the tool
+`online_ai_chat`, so the local AI can delegate hard questions
+to the online model.
+
+| Provider | Base URL | Env var |
+|---|---|---|
+| OpenRouter | https://openrouter.ai/api/v1 | `OPENROUTER_API_KEY` |
+| OpenAI | https://api.openai.com/v1 | `OPENAI_API_KEY` |
+| Groq | https://api.groq.com/openai/v1 | `GROQ_API_KEY` |
+| Together | https://api.together.xyz/v1 | `TOGETHER_API_KEY` |
+| DeepSeek | https://api.deepseek.com/v1 | `DEEPSEEK_API_KEY` |
+
+See [`docs/ONLINE_AI.md`](docs/ONLINE_AI.md) for details.
+
+---
+
+
+## Connectors: Kafka and Trino
+
+The toolkit ships with lightweight Python clients for **Kafka** and
+**Trino**. No Docker, no local cluster; point them at any reachable
+server on your network.
+
+### Kafka
+
+```python
+from toolkit.connections import (
+    kafka_topics, kafka_consumer, kafka_producer, kafka_consume_once,
+    read_kafka_topic_via_duckdb,
+)
+
+# List topics
+print(kafka_topics('kafka-broker:9092'))
+
+# Consume (streaming)
+consumer = kafka_consumer('kafka-broker:9092', topics=['events'])
+for msg in consumer:
+    print(msg.topic, msg.partition, msg.offset, msg.value)
+
+# Consume N messages, then stop
+rows = kafka_consume_once('kafka-broker:9092', 'events', max_messages=50)
+
+# Produce
+producer = kafka_producer('kafka-broker:9092')
+producer.send('events', {'user': 'ali', 'action': 'login'})
+producer.flush()
+
+# Read a topic as a DuckDB table (no Python client)
+import duckdb
+con = duckdb.connect()
+df = read_kafka_topic_via_duckdb(con, 'kafka-broker:9092', 'events')
+```
+
+### Trino
+
+```python
+from toolkit.connections import trino_query, trino_catalogs
+
+# List catalogs on a Trino cluster
+print(trino_catalogs('trino-coordinator'))
+
+# Run SQL and get a pandas DataFrame
+df = trino_query(
+    host='trino-coordinator',
+    sql='SELECT region, count(*) FROM hive.default.sales GROUP BY region',
+    catalog='hive',
+    schema='default',
+)
+print(df)
+```
+
+### Client packages
+
+| Client | Package | Size |
+|---|---|---|
+| Kafka (light) | `kafka-python` | ~600 KB |
+| Kafka (fast) | `confluent-kafka` | ~5 MB |
+| Trino | `trino` | ~2 MB |
+
+All three are installed with the `standard` and `full` profiles.
+Flink SQL is supported through the Flink SQL Gateway REST API
+(no Python package needed).
+
+See [`docs/DATA_ENGINEERING.md`](docs/DATA_ENGINEERING.md) for details.
 
 ---
 

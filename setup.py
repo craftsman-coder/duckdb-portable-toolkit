@@ -32,7 +32,6 @@ from typing import Any
 if os.name == "nt":
     os.system("")
 
-
 # ==================================================================
 # ANSI colors
 # ==================================================================
@@ -52,19 +51,15 @@ class C:
     BRIGHT_MAGENTA = "\033[95m"
     BRIGHT_WHITE = "\033[97m"
 
-
 def _no_color() -> bool:
     return bool(os.environ.get("NO_COLOR")) or not sys.stdout.isatty()
 
-
 USE_COLOR = not _no_color()
-
 
 def _c(text: str, *codes: str) -> str:
     if not USE_COLOR:
         return text
     return "".join(codes) + text + C.RESET
-
 
 def step(title: str) -> None:
     bar = "-" * 64
@@ -74,32 +69,25 @@ def step(title: str) -> None:
     print(_c(bar, C.BRIGHT_CYAN))
     print()
 
-
 def ok(msg: str) -> None:
     print("  " + _c("OK", C.BOLD, C.BRIGHT_GREEN) + "  " + msg)
-
 
 def warn(msg: str) -> None:
     print("  " + _c("!!", C.BOLD, C.BRIGHT_YELLOW) + "  " + msg)
 
-
 def err(msg: str) -> None:
     print("  " + _c("XX", C.BOLD, C.BRIGHT_RED) + "  " + msg)
 
-
 def info(msg: str) -> None:
     print("  " + _c(msg, C.DIM))
-
 
 def heading(msg: str) -> None:
     print()
     print(_c("  " + msg, C.BOLD, C.BRIGHT_MAGENTA))
     print()
 
-
 def key_value(key: str, value: str) -> None:
     print("  " + _c(f"{key:<18}", C.CYAN) + ": " + str(value))
-
 
 # ==================================================================
 # Constants
@@ -119,7 +107,6 @@ ARCH = {
 
 PY_BUILD_TAG = "20241016"
 
-
 # ==================================================================
 # PyYAML bootstrap
 # ==================================================================
@@ -136,9 +123,7 @@ def _ensure_yaml() -> Any:
         import yaml
         return yaml
 
-
 yaml = _ensure_yaml()
-
 
 # ==================================================================
 # Banner
@@ -163,7 +148,6 @@ def print_banner() -> None:
     print(_c("  Windows, Linux, and macOS. No root needed.", C.DIM))
     print()
 
-
 # ==================================================================
 # Profile selection
 # ==================================================================
@@ -173,7 +157,6 @@ PROFILE_INFO = [
     ("3", "full",     "+ EDA + MLflow + all extensions",      "~5.7 GB"),
     ("4", "custom",   "Like full, but you edit config first", "varies"),
 ]
-
 
 def show_profile_table() -> None:
     heading("Installation Profiles")
@@ -186,7 +169,6 @@ def show_profile_table() -> None:
         )
         print(line)
     print()
-
 
 def prompt_profile_cli() -> str:
     while True:
@@ -209,7 +191,6 @@ def prompt_profile_cli() -> str:
         if choice in ("4", "custom"):
             return "custom"
         err("Invalid choice: " + repr(choice))
-
 
 def prompt_existing_config() -> str:
     heading("config.yaml already exists")
@@ -237,7 +218,6 @@ def prompt_existing_config() -> str:
             return "edit"
         err("Invalid choice: " + repr(choice))
 
-
 def choose_profile(force: str | None = None) -> str:
     if force:
         if force not in ("light", "standard", "full", "custom"):
@@ -257,7 +237,6 @@ def choose_profile(force: str | None = None) -> str:
 
     show_profile_table()
     return prompt_profile_cli()
-
 
 def apply_profile(profile: str) -> None:
     if profile == "keep":
@@ -280,7 +259,6 @@ def apply_profile(profile: str) -> None:
         print()
         sys.exit(0)
 
-
 # ==================================================================
 # Config loading
 # ==================================================================
@@ -291,11 +269,9 @@ def load_config() -> dict:
     with open(CONFIG_FILE, "r", encoding="utf-8") as fh:
         return yaml.safe_load(fh)
 
-
 def resolve(base: Path, value: str) -> Path:
     p = Path(value).expanduser()
     return p if p.is_absolute() else (base / p).resolve()
-
 
 class Paths:
     def __init__(self, cfg: dict) -> None:
@@ -317,14 +293,12 @@ class Paths:
         self.mlruns_dir     = resolve(base, p.get("mlruns_dir", "mlruns"))
         self.reports_dir    = resolve(base, p.get("reports_dir", "reports"))
 
-
 # ==================================================================
 # Executable paths
 # ==================================================================
 def python_exe(paths: Paths) -> Path:
     return (paths.python_dir / "python.exe" if OS == "windows"
             else paths.python_dir / "bin" / "python3")
-
 
 def site_packages(paths: Paths) -> Path:
     py = python_exe(paths)
@@ -338,7 +312,6 @@ def site_packages(paths: Paths) -> Path:
     if r.returncode != 0:
         return Path()
     return Path(r.stdout.strip())
-
 
 # ==================================================================
 # Download helpers
@@ -360,23 +333,19 @@ def download(url: str, dest: Path, retries: int = 3) -> None:
                 err("download failed after " + str(retries) + " attempts: " + str(exc))
                 raise
 
-
 def extract_tar_gz(archive: Path, target: Path) -> None:
     with tarfile.open(archive, "r:gz") as t:
         t.extractall(target)
     archive.unlink()
-
 
 def extract_zip(archive: Path, target: Path) -> None:
     with zipfile.ZipFile(archive) as z:
         z.extractall(target)
     archive.unlink()
 
-
 def make_executable(path: Path) -> None:
     if OS != "windows" and path.exists():
         os.chmod(path, 0o755)
-
 
 # ==================================================================
 # 1. Create directory structure
@@ -394,7 +363,6 @@ def create_dirs(paths: Paths) -> None:
         except ValueError:
             ok(str(d))
 
-
 # ==================================================================
 # 2. Portable Python
 # ==================================================================
@@ -405,14 +373,12 @@ def platform_tag() -> str:
         return "x86_64-apple-darwin" if ARCH == "x86_64" else "aarch64-apple-darwin"
     return ARCH + "-unknown-linux-gnu"
 
-
 def python_build_url(version: str) -> tuple[str, str]:
     base = ("https://github.com/astral-sh/python-build-standalone/"
             "releases/download/" + PY_BUILD_TAG)
     filename = ("cpython-" + version + "+" + PY_BUILD_TAG + "-"
                 + platform_tag() + "-install_only.tar.gz")
     return base + "/" + filename, filename
-
 
 def install_portable_python(paths: Paths, cfg: dict) -> None:
     step("Installing portable Python " + cfg["python"]["version"])
@@ -460,7 +426,6 @@ def install_portable_python(paths: Paths, cfg: dict) -> None:
                        capture_output=True, text=True)
     ok("Python installed: " + (r.stdout.strip() or r.stderr.strip()))
 
-
 # ==================================================================
 # 3. Package groups
 # ==================================================================
@@ -503,13 +468,20 @@ PKG_GROUPS = {
     "cloud": [
         "boto3", "openpyxl", "qvdrs[duckdb]",
     ],
+    "connectors": [
+        "kafka-python",          # lightweight Kafka client
+        "confluent-kafka",       # faster Kafka client (librdkafka)
+        "trino",                 # Trino DBAPI client
+         # Flink SQL Gateway DBAPI client
+    ],
     "utilities": [
         "pyyaml", "requests", "tqdm", "loguru", "rich",
         "humanize", "tabulate", "jinja2", "markdown", "pydantic",
         "mcp", "openai-whisper", "certifi",
+        "openai",
+        "litellm",
     ],
 }
-
 
 def pip_install(py: str, package: str, retries: int = 3) -> bool:
     for attempt in range(1, retries + 1):
@@ -526,7 +498,6 @@ def pip_install(py: str, package: str, retries: int = 3) -> bool:
             warn("retry " + str(attempt) + "/" + str(retries) + " for " + package)
             time.sleep(3 * attempt)
     return False
-
 
 def install_packages(paths: Paths, cfg: dict) -> None:
     step("Installing Python packages (directly, no venv)")
@@ -591,7 +562,6 @@ def install_packages(paths: Paths, cfg: dict) -> None:
     else:
         ok("all packages installed")
 
-
 # ==================================================================
 # 4. DuckDB CLI
 # ==================================================================
@@ -624,7 +594,6 @@ def install_duckdb(paths: Paths, cfg: dict) -> None:
     extract_zip(archive, paths.duckdb_dir)
     make_executable(exe_path)
     ok("DuckDB CLI ready")
-
 
 # ==================================================================
 # 5. DuckDB extensions
@@ -663,7 +632,6 @@ def install_extensions(paths: Paths, cfg: dict) -> None:
             else:
                 warn(name + "  (" + repo + ") - skipped")
     ok("extensions processed")
-
 
 # ==================================================================
 # 6. llama.cpp
@@ -721,7 +689,6 @@ def install_llama_cpp(paths: Paths, cfg: dict) -> None:
         return
 
     err(exe_name + " not found after extraction")
-
 
 # ==================================================================
 # 7. AI model (GGUF)
@@ -784,7 +751,6 @@ def install_bi_drivers(paths: Paths, cfg: dict) -> None:
     readme.write_text(DRIVERS_README, encoding="utf-8")
     ok("Created drivers/README.md")
 
-
 DRIVERS_README = """# DuckDB BI Drivers
 
 This folder contains ODBC and JDBC drivers for DuckDB, so BI tools
@@ -828,7 +794,6 @@ like Tableau, Power BI, and Qlik Sense can connect directly.
   tool to Parquet instead (faster)
 """
 
-
 def install_ai_model(paths: Paths, cfg: dict) -> None:
     step("Setting up AI model")
 
@@ -853,13 +818,11 @@ def install_ai_model(paths: Paths, cfg: dict) -> None:
     info("downloading " + m["filename"] + " (~" + str(m.get("size_gb", 1)) + " GB) ...")
     download(m["download_url"], model_path)
 
-
 # ==================================================================
 # 8. tiktoken cache
 # ==================================================================
 TIKTOKEN_URL = ("https://openaipublic.blob.core.windows.net/"
                 "encodings/cl100k_base.tiktoken")
-
 
 def install_tiktoken_cache(paths: Paths, cfg: dict) -> None:
     step("Caching tiktoken encodings")
@@ -910,7 +873,6 @@ def install_tiktoken_cache(paths: Paths, cfg: dict) -> None:
     else:
         env_file.write_text(line + "\n", encoding="utf-8")
 
-
 # ==================================================================
 # 9. Patch launchers
 # ==================================================================
@@ -952,7 +914,6 @@ def patch_launchers(paths: Paths) -> None:
                 sh.write_text(text, encoding="utf-8")
                 ok("patched start-jupyter.sh")
 
-
 # ==================================================================
 # 10. Jupyter config + silence warnings
 # ==================================================================
@@ -965,7 +926,6 @@ c.ServerApp.allow_remote_access = True
 c.ServerApp.log_level = "WARN"
 """
 
-
 def write_jupyter_config(paths: Paths, cfg: dict) -> None:
     step("Writing Jupyter configuration")
 
@@ -975,7 +935,6 @@ def write_jupyter_config(paths: Paths, cfg: dict) -> None:
     cfg_file = cfg_dir / "jupyter_server_config.py"
     cfg_file.write_text(JUPYTER_CONFIG, encoding="utf-8")
     ok("created runtime/jupyter_config/jupyter_server_config.py")
-
 
 def suppress_litellm_warning(paths: Paths, cfg: dict) -> None:
     step("Suppressing litellm warning")
@@ -993,7 +952,6 @@ def suppress_litellm_warning(paths: Paths, cfg: dict) -> None:
     pth = sp / "duckdb_toolkit_warnings.pth"
     pth.write_text("\n".join(lines) + "\n", encoding="utf-8")
     ok("created duckdb_toolkit_warnings.pth")
-
 
 def silence_extension_warnings(paths: Paths, cfg: dict) -> None:
     step("Silencing JupyterLab warnings")
@@ -1014,7 +972,6 @@ def silence_extension_warnings(paths: Paths, cfg: dict) -> None:
         capture_output=True, text=True,
     )
     ok("jupyterlab-plotly removed")
-
 
 def clean_notebooks(paths: Paths, cfg: dict) -> None:
     step("Cleaning stale notebooks")
@@ -1056,14 +1013,12 @@ def clean_notebooks(paths: Paths, cfg: dict) -> None:
     if not removed and not cleaned:
         ok("no stale notebooks found")
 
-
 def finalize_jupyter_setup(paths: Paths, cfg: dict) -> None:
     """Run all warning-silencing steps at the end of setup."""
     write_jupyter_config(paths, cfg)
     suppress_litellm_warning(paths, cfg)
     silence_extension_warnings(paths, cfg)
     clean_notebooks(paths, cfg)
-
 
 # ==================================================================
 # 11. Whisper model
@@ -1108,7 +1063,6 @@ def install_whisper_model(paths: Paths, cfg: dict) -> None:
         if r.stderr:
             print("       " + r.stderr.strip().splitlines()[-1][:200])
 
-
 # ==================================================================
 # 12. Register toolkit import (.pth)
 # ==================================================================
@@ -1129,7 +1083,6 @@ def register_toolkit_import(paths: Paths) -> None:
     pth.write_text(rel + "\n", encoding="utf-8")
     ok("created " + pth.name)
     info("relative path: " + rel)
-
 
 # ==================================================================
 # 13. Register Jupyter kernel
@@ -1164,7 +1117,6 @@ def register_kernel(paths: Paths) -> None:
     else:
         warn("kernel registration failed")
 
-
 # ==================================================================
 # 14. Manifest
 # ==================================================================
@@ -1180,7 +1132,6 @@ def generate_manifest(paths: Paths) -> None:
         ok("runtime/manifest.md generated")
     else:
         warn("manifest generation failed")
-
 
 # ==================================================================
 # 15. Config files
@@ -1199,7 +1150,6 @@ CREATE SECRET IF NOT EXISTS mysql (
     DATABASE 'mydb', USER 'user', PASSWORD 'pass'
 );
 """
-
 
 def write_configs(paths: Paths, cfg: dict) -> None:
     step("Writing configuration files")
@@ -1230,7 +1180,6 @@ def write_configs(paths: Paths, cfg: dict) -> None:
         encoding="utf-8",
     )
     ok("created configs/paths.json (relative paths)")
-
 
 # ==================================================================
 # Main
@@ -1289,6 +1238,14 @@ def main() -> None:
     print(_c(bar, C.BOLD, C.BRIGHT_GREEN))
     print()
 
+    heading("Optional connectors")
+    info("Kafka, Trino, and Flink SQL Gateway clients are installed")
+    info("in the connectors group. For Flink SQL Gateway, start the")
+    info("gateway on your cluster and point the client to it.")
+    info("")
+    info("Java (JRE) 11 or 17 is recommended for full Spark support.")
+    info("")
+
     heading("Next steps")
     if OS == "windows":
         launch = "start-jupyter.bat"
@@ -1314,7 +1271,6 @@ def main() -> None:
         cmd = "runtime/python/bin/python3 verify.py"
     print("     " + _c(cmd, C.BRIGHT_GREEN))
     print()
-
 
 if __name__ == "__main__":
     main()

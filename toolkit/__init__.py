@@ -8,3 +8,5 @@ from toolkit import jobs          # noqa: F401
 from toolkit import io_helpers    # noqa: F401
 from toolkit import ml            # noqa: F401
 from toolkit import lakehouse     # noqa: F401
+from toolkit import connections
+from toolkit import online_ai
