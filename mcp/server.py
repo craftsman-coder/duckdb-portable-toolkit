@@ -135,6 +135,23 @@ async def list_tools():
             },
         },
         {
+            "name": "online_ai_chat",
+            "description": (
+                "Send a prompt to an online AI model (OpenRouter, OpenAI, "
+                "etc.) and return the reply. Use this for questions that "
+                "need a bigger model than the local one."
+            ),
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "prompt": {"type": "string", "description": "The user's message"},
+                    "system": {"type": "string", "description": "Optional system prompt"},
+                    "model": {"type": "string", "description": "Optional model slug, e.g. 'openai/gpt-4o-mini'"},
+                },
+                "required": ["prompt"],
+            },
+        },
+        {
             "name": "business_context",
             "description": (
                 "Return the business context: table descriptions, business "
@@ -201,6 +218,20 @@ async def call_tool(name: str, arguments: dict):
             conn.close()
             return [TextContent(type="text",
                                 text=df.to_json(orient="records", indent=2))]
+
+        if name == "online_ai_chat":
+            from toolkit.online_ai import chat as _online_chat
+            prompt = arguments.get("prompt", "").strip()
+            system = arguments.get("system")
+            model = arguments.get("model")
+            if not prompt:
+                return [TextContent(type="text", text="Error: prompt is required",
+                                    isError=True)]
+            try:
+                reply = _online_chat(prompt, system=system, model=model)
+                return [TextContent(type="text", text=reply)]
+            except Exception as exc:
+                return [TextContent(type="text", text=f"Error: {exc}", isError=True)]
 
         if name == "business_context":
             return [TextContent(type="text", text=business_context())]
