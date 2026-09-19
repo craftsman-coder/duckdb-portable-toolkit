@@ -5,6 +5,11 @@ with data at high speed. It brings together DuckDB, JupyterLab,
 Streamlit, a local language model, and BI drivers inside one folder;
 no installation, no admin rights, no virtual environment.
 
+> 🌐 **[Interactive HTML guide (live)](https://craftsman-coder.github.io/duckdb-toolkit/)** — open in browser, no download needed
+>
+> 📄 **[Offline HTML guide](docs/index.html)** — same guide, works without internet
+
+
 It is built for the people who work with data every day:
 
 - **Data engineers** building pipelines and lakehouse workloads
